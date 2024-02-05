@@ -35,16 +35,16 @@ export default function Footer(){
                     Seguinos
                   </p>
                   <div className="flex flex-row lg:ml-8 ml-5 mt-1 gap-4">
-                    <Link href="https://www.instagram.com/immer.world/">
+                    <Link href="https://www.instagram.com">
                       <SvgInstagram width={30} height={30}/>
                     </Link>
-                    <Link href="https://twitter.com/immerEnt">
+                    <Link href="https://twitter.com">
                       <SvgX width={30} height={30}/>
                     </Link>
-                    <Link href="https://www.facebook.com/immerent">
+                    <Link href="https://www.facebook.com/profile.php?id=100063544271389">
                       <SvgFB width={30} height={30}/>
                     </Link>
-                    <Link href="https://www.threads.net/@immer.world">
+                    <Link href="https://www.threads.net">
                       <SvgThreads width={30} height={30}/>
                     </Link>
                   </div>

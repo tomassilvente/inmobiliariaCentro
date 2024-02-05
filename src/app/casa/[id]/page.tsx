@@ -31,7 +31,7 @@ export default function casas({params}:any){
     }, [])
     return(
         
-        <div className="m-5 bg-white border shadow-lg rounded-xl">
+        <div className="m-5 bg-white border shadow-lg rounded-xl ">
             {
                 Loading? <p className="text-3xl text-center text-green-500 m-[150px]">Cargando...</p>
                 :<div className="md:flex">
