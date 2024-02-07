@@ -2,6 +2,9 @@ import {UserButton, auth, useUser} from '@clerk/nextjs'
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import SvgNewHouse from '../../../public/assets/newHouse';
+import SvgPaper from '../../../public/assets/paper';
+import SvgHouseList from '../../../public/assets/houseList';
 
 export default function admin(){
     const {userId} = auth();
@@ -21,19 +24,19 @@ export default function admin(){
                 <Link className='w-[70%]' href={'/admin/crear-casa'}>
                     <div className='max-w-[280px] border rounded-lg p-5'>
                         Crear Inmueble
-                        <Image className='mt-[20px]' src='/../images/casa.png' alt='casa' width={240} height={240} />
+                        <SvgNewHouse className='w-[100%] h-[100%]' height={240} width={200}/>
                     </div>
                 </Link>
                 <Link className='w-[70%]' href={'/admin/casas'}>
                     <div className=' max-w-[280px] border rounded-lg p-5'>
                         Ver Inmuebles
-                        <Image className='mt-[20px]' src='/../images/casa.png' alt='casa' width={240} height={240} />
+                        <SvgHouseList className='w-[100%] h-[100%]' height={240} width={200}/>
                     </div>
                     </Link>
                 <Link className='w-[70%]' href={'/admin/nosotros'}>
-                    <div className='max-w-[280px] border rounded-lg p-5'>
+                    <div className='max-w-[280px] border rounded-lg p-5 '>
                         Modificar Nosotros
-                        <Image className='mt-[20px]' src='/../images/casa.png' alt='casa' width={240} height={240} />
+                        <SvgPaper className='w-[100%] h-[100%]' height={240} width={200}/>
                     </div>
                 </Link>
             </div>

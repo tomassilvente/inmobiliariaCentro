@@ -17,7 +17,7 @@ export default function Venta(){
                 }
             })
             if(response){ 
-            const {data} = await response.json()
+            const data = await response.json()
             console.log(data)
             if(data) setData(data)
             }

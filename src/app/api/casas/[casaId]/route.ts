@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import data from '../../../../../public/data/Data.json'
 
-
 export async function GET(request: Request, context:any){
 
     const {params} = context
@@ -10,5 +9,17 @@ export async function GET(request: Request, context:any){
     return NextResponse.json({
         casa
     })
+
+}
+
+export async function PUT(){
+
+}
+
+export async function POST(){
+
+}
+
+export async function DELETE(){
 
 }
