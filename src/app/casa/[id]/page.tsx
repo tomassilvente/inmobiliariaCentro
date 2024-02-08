@@ -10,7 +10,7 @@ export default function casas({params}:any){
     
     const getCasa = async()=>{
         try{
-            const response = await fetch(`http://localhost:3000/api/casas/${params.id}`,{
+            const response = await fetch(`/api/casas/${params.id}`,{
                 method:'GET',
                 next:{
                     revalidate: 5000

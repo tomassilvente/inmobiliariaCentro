@@ -1,10 +1,12 @@
+import { con } from "@/libs/db";
+import { Casa } from "@/types/casa.interface";
 import { NextResponse } from "next/server";
-import data from '../../../../../public/data/Data.json'
 
 export async function GET(request: Request, context:any){
 
     const {params} = context
-    const casa = data.filter(x => params.casaId === x.id.toString())
+    const casas:Array<Casa> = await con.query('SELECT * FROM casas')
+    const casa = casas.filter(x => params.casaId === x.id.toString())
 
     return NextResponse.json({
         casa

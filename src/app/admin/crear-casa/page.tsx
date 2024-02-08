@@ -1,5 +1,5 @@
 'use client'
-import { Casa } from "@/types/casa.interface"
+import axios from "axios"
 import { useState } from "react"
 
 type FormData = {
@@ -8,7 +8,7 @@ type FormData = {
     valor: string,
     dormitorios: number,
     ambientes: number,
-    contrato?: string ,
+    contrato?: string | null,
     tipo:string,
     m2:number,
     dueno:string,
@@ -17,15 +17,15 @@ type FormData = {
 }
 
 export default function crearCasa(){
-
+    
     const [formData, setFormData] = useState<FormData>({
         imagen: '',
         ubicacion: '',
         valor: '',
         dormitorios: 0,
         ambientes: 0,
-        contrato: '',
-        tipo:'',
+        contrato: null,
+        tipo:'', 
         m2:0,
         dueno:'',
         banos: 0,
@@ -33,6 +33,8 @@ export default function crearCasa(){
       })
 
       const [errors, setErrors] = useState<Record<string, string>>({})
+      const [file, setFile] = useState<any>(null)
+
 
       const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
         const { name, value } = e.target
@@ -40,12 +42,15 @@ export default function crearCasa(){
       }
 
       const validateFormData = (): boolean => {
+
         let valid = true
         const errs: Record<string, string> = {}
-    
+        if(file !== null){
+            formData.imagen = `/../images/${file.name}`
+        }
+        else errs.imagen = 'Al menos 1 imagen Requerida'
         if (!formData.ubicacion) errs.ubicacion = 'Ubicación Requerida'
         if (!formData.valor) errs.valor = 'Valor Requerido'
-        if (formData.imagen.length < 1) errs.imagen = 'Al menos 1 imagen Requerida'
         if (!formData.tipo) errs.tipo = 'Tipo Requerido'
         if (formData.m2 < 1) errs.m2 = 'm2 Requerido'
         if (!formData.dueno) errs.dueno = 'Dueño Requerido'
@@ -59,10 +64,19 @@ export default function crearCasa(){
 
       const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault()
-    
-        if (!validateFormData()) return
 
-        
+        if (!validateFormData()) {
+            console.log(errors)
+            return
+        }
+
+        console.log(formData)
+        const res = await axios.post('/api/casas', formData,{
+            headers:{
+                'Content-Type': 'Multipar/form-data'
+            }
+        })
+        console.log(res)
       }
     return(
         <div className="mx-[50px] bg-white rounded-xl pb-[50px] pt-[20px] my-[35px]">
@@ -89,16 +103,6 @@ export default function crearCasa(){
                     />
                 </div>
                 <div>
-                    <span className="text-sm">Dormitorios</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
-                        name="dormitorios" 
-                        type="number" 
-                        onChange={handleChange}
-                        />
-                </div>
-                <div>
                     <span className="text-sm">Tipo de Inmueble</span>
                     <br />
                     <select 
@@ -113,12 +117,36 @@ export default function crearCasa(){
                     </select>
                 </div>
                 <div>
+                    <span className="text-sm">Ambientes</span>
+                    <br />
+                    <input 
+                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
+                        name="ambientes" 
+                        type="number"
+                        defaultValue={1}
+                        onChange={handleChange}
+                        />
+                </div>
+                <div>
+                    <span className="text-sm">Dormitorios</span>
+                    <br />
+                    <input 
+                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
+                        name="dormitorios" 
+                        type="number" 
+                        defaultValue={1}
+                        onChange={handleChange}
+                        />
+                </div>
+                
+                <div>
                     <span className="text-sm">Baños</span>
                     <br />
                     <input 
                         className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
                         name="banos" 
                         type="number" 
+                        defaultValue={1}
                         onChange={handleChange}
                         />
                 </div>
@@ -142,6 +170,7 @@ export default function crearCasa(){
                         className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
                         name="m2" 
                         type="number" 
+                        defaultValue={30}
                         onChange={handleChange}
                     />
                 </div>
@@ -174,7 +203,7 @@ export default function crearCasa(){
                         multiple 
                         type="file" 
                         accept=".png, .jpg, .jpeg"
-                        onChange={handleChange}
+                        onChange={e => {setFile(e.target.files[0])}}
                     />
                 </div>
                 <br />
