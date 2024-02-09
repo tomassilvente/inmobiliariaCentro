@@ -1,5 +1,7 @@
 'use client'
 import axios from "axios"
+import { useRouter } from "next/navigation"
+import { stringify } from "querystring"
 import { useState } from "react"
 
 type FormData = {
@@ -35,6 +37,8 @@ export default function crearCasa(){
       const [errors, setErrors] = useState<Record<string, string>>({})
       const [file, setFile] = useState<any>(null)
 
+      let errores = 'Falta'
+      const router = useRouter()
 
       const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
         const { name, value } = e.target
@@ -49,24 +53,27 @@ export default function crearCasa(){
             formData.imagen = `/../images/${file.name}`
         }
         else errs.imagen = 'Al menos 1 imagen Requerida'
-        if (!formData.ubicacion) errs.ubicacion = 'Ubicación Requerida'
-        if (!formData.valor) errs.valor = 'Valor Requerido'
-        if (!formData.tipo) errs.tipo = 'Tipo Requerido'
-        if (formData.m2 < 1) errs.m2 = 'm2 Requerido'
-        if (!formData.dueno) errs.dueno = 'Dueño Requerido'
-        if (formData.banos < 1) errs.banos = 'Al menos 1 baño Requerida'
+        if (!formData.ubicacion) {errs.ubicacion = 'Ubicación Requerida'; errores = errores + ' Ubicación'}
+        if (!formData.valor) {errs.valor = 'Valor Requerido'; errores = errores + ' Valor'}
+        if (!formData.tipo) {errs.tipo = 'Tipo Requerido'; errores = errores + ' Tipo'}
+        if (formData.m2 < 1) {errs.m2 = 'm2 Requerido'; errores = errores + ' M2'}
+        if (!formData.dueno) {errs.dueno = 'Dueño Requerido'; errores = errores + ' Dueño'}
+        if (formData.banos < 1) {errs.banos = 'Al menos 1 baño Requerida'; errores = errores + ' Baños'}
     
         if (Object.keys(errs).length > 0) valid = false
         setErrors(errs)
-
+        
+        console.log(errores)
         return valid
       }
 
       const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault()
-
+        
+        errores = 'Falta'
         if (!validateFormData()) {
             console.log(errors)
+            alert(errores)
             return
         }
 
@@ -77,6 +84,7 @@ export default function crearCasa(){
             }
         })
         console.log(res)
+        router.push('/admin')
       }
     return(
         <div className="mx-[50px] bg-white rounded-xl pb-[50px] pt-[20px] my-[35px]">
@@ -207,6 +215,7 @@ export default function crearCasa(){
                     />
                 </div>
                 <br />
+                
                 <button 
                     type="submit" 
                     className="col-start-2 bg-green-500 h-[50px] rounded-xl text-white text-2xl"
