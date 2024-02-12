@@ -1,12 +1,10 @@
 'use client'
 import axios from "axios"
 import { useRouter } from "next/navigation"
-import path from "path"
 import { useState } from "react"
 
 export type FormData = {
-    imagen: string,
-    imagenBuffer: any,
+    imagen: any,
     ubicacion: string,
     valor: string,
     dormitorios: number,
@@ -23,7 +21,6 @@ export default function crearCasa(){
     
     const [formData, setFormData] = useState<FormData>({
         imagen: '',
-        imagenBuffer: '' ,
         ubicacion: '',
         valor: '',
         dormitorios: 0,
@@ -52,7 +49,7 @@ export default function crearCasa(){
         let valid = true
         const errs: Record<string, string> = {}
         if(file !== null){
-            formData.imagen = file
+            formData.imagen = file[0]
         }
         else errs.imagen = 'Al menos 1 imagen Requerida'
         if (!formData.ubicacion) {errs.ubicacion = 'Ubicación Requerida'; errores = errores + ' Ubicación'}
@@ -78,23 +75,15 @@ export default function crearCasa(){
             alert(errores)
             return
         }
-        
-        const filePath = path.join(process.cwd(), 'public', file[0].name )
-        const bytes = await file[0].name.arrayBuffer()
-        const buffer = Buffer.from(bytes)
-        console.log(buffer)
-        formData.imagen = filePath
-        formData.imagenBuffer = buffer
 
         console.log(formData)
-        const res = await axios.post('/api/casas', formData,{
-            headers:{
-                'Content-Type': 'Multipar/form-data'
-            }
-        })
+        const res = await axios.post("/api/casas", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
         
-        console.log(res)
-        router.push('/admin')
+        if(res) router.push('/admin')
       }
     return(
         <div className="mx-[50px] bg-white rounded-xl pb-[50px] pt-[20px] my-[35px]">
