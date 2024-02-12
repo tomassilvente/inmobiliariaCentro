@@ -1,11 +1,12 @@
 'use client'
 import axios from "axios"
 import { useRouter } from "next/navigation"
-import { stringify } from "querystring"
+import path from "path"
 import { useState } from "react"
 
-type FormData = {
+export type FormData = {
     imagen: string,
+    imagenBuffer: any,
     ubicacion: string,
     valor: string,
     dormitorios: number,
@@ -22,6 +23,7 @@ export default function crearCasa(){
     
     const [formData, setFormData] = useState<FormData>({
         imagen: '',
+        imagenBuffer: '' ,
         ubicacion: '',
         valor: '',
         dormitorios: 0,
@@ -50,7 +52,7 @@ export default function crearCasa(){
         let valid = true
         const errs: Record<string, string> = {}
         if(file !== null){
-            formData.imagen = `/../images/${file.name}`
+            formData.imagen = file
         }
         else errs.imagen = 'Al menos 1 imagen Requerida'
         if (!formData.ubicacion) {errs.ubicacion = 'Ubicación Requerida'; errores = errores + ' Ubicación'}
@@ -76,6 +78,13 @@ export default function crearCasa(){
             alert(errores)
             return
         }
+        
+        const filePath = path.join(process.cwd(), 'public', file[0].name )
+        const bytes = await file[0].name.arrayBuffer()
+        const buffer = Buffer.from(bytes)
+        console.log(buffer)
+        formData.imagen = filePath
+        formData.imagenBuffer = buffer
 
         console.log(formData)
         const res = await axios.post('/api/casas', formData,{
@@ -83,6 +92,7 @@ export default function crearCasa(){
                 'Content-Type': 'Multipar/form-data'
             }
         })
+        
         console.log(res)
         router.push('/admin')
       }
@@ -211,7 +221,7 @@ export default function crearCasa(){
                         multiple 
                         type="file" 
                         accept=".png, .jpg, .jpeg"
-                        onChange={e => {setFile(e.target.files[0])}}
+                        onChange={e => {setFile(e.target.files)}}
                     />
                 </div>
                 <br />

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { con } from "@/libs/db";
-import { writeFile } from "fs";
+import { writeFile } from "fs/promises";
 import path from "path";
 
 export async function GET(){
@@ -31,6 +31,7 @@ export async function POST(request:any){
     try{
         const {
             imagen,
+            imagenBuffer,
             ubicacion,
             valor,
             dormitorios,
@@ -42,11 +43,7 @@ export async function POST(request:any){
             banos,
             cochera} = await request.json()
 
-        // const bytes =  await imagen.arrayBuffer()
-        // const buffer = Buffer.from(bytes)
-
-        // const filePath = path.join(process.cwd(), 'public', imagen.name )
-        // await writeFile(filePath, buffer)
+        await writeFile(imagen, imagenBuffer)
 
         const result = await con.query('INSERT INTO casas SET ?',{
             imagen: imagen,
