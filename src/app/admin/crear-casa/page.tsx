@@ -14,7 +14,7 @@ export type FormData = {
     m2:number,
     dueno:string,
     banos: number,
-    cochera: boolean
+    cochera: number
 }
 
 export default function crearCasa(){
@@ -30,7 +30,7 @@ export default function crearCasa(){
         m2:0,
         dueno:'',
         banos: 0,
-        cochera: true
+        cochera: 0
       })
 
       const [errors, setErrors] = useState<Record<string, string>>({})
@@ -82,7 +82,7 @@ export default function crearCasa(){
               "Content-Type": "multipart/form-data",
             },
           });
-        
+        console.log(res)
         if(res) router.push('/admin')
       }
     return(
@@ -166,8 +166,8 @@ export default function crearCasa(){
                         name="tipo"
                         onChange={handleChange}
                     >
-                        <option value={'true'}>Si</option>
-                        <option value={'false'}>No</option>
+                        <option value={1}>Si</option>
+                        <option value={0}>No</option>
                     </select>
                 </div>
                 <div>
