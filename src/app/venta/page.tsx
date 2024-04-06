@@ -3,7 +3,7 @@ import HorizontalCard from '@/components/common/HorizontalCard';
 import { Casa } from '@/types/casa.interface';
 import { useEffect, useState } from 'react';
 
-export default function ventas(){
+export default function Ventas(){
 
     const [data, setData] = useState<Array<Casa>>([])
     const [Loading, setLoading] = useState<boolean>(true)
@@ -38,6 +38,7 @@ export default function ventas(){
                 :
                 data.filter(x => x.contrato == null).map((venta) => (
                     <HorizontalCard
+                    key={venta.id}
                     image={venta.imagen}          ubicacion={venta.ubicacion} 
                     valor={venta.valor}           dormitorios={venta.dormitorios} 
                     ambientes={venta.ambientes}   banos={venta.banos} 

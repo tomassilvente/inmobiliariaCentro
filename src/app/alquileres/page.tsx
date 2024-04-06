@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import HorizontalCard from '../../components/common/HorizontalCard';
 import { Casa } from '@/types/casa.interface';
 
-export default function alquiler(){
+export default function Alquiler(){
 
     const [data, setData] = useState<Array<Casa>>([])
     const [Loading, setLoading] = useState<boolean>(true)
@@ -26,9 +26,7 @@ export default function alquiler(){
         finally {setLoading(false)}
     }
 
-    useEffect(()=>{
-        getCasas()
-    })
+    getCasas()
 
     return(
         <div className="mt-5 py-5">
@@ -38,6 +36,7 @@ export default function alquiler(){
                 :
                 data.filter(x => x.contrato).map((alquiler) => (
                     <HorizontalCard
+                        key={alquiler.id}
                         image={alquiler.imagen}          ubicacion={alquiler.ubicacion} 
                         valor={alquiler.valor}           dormitorios={alquiler.dormitorios} 
                         ambientes={alquiler.ambientes}   banos={alquiler.banos} 

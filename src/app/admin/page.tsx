@@ -6,7 +6,7 @@ import SvgNewHouse from '../../../public/assets/newHouse';
 import SvgPaper from '../../../public/assets/paper';
 import SvgHouseList from '../../../public/assets/houseList';
 
-export default function admin(){
+export default function Admin(){
     const {userId} = auth();
 
     if(!userId){

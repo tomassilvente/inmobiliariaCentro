@@ -41,8 +41,9 @@ export default function Alquiler(){
                 Loading
                 ? <h1 className='mt-[170px] mb-[150px] text-3xl font-semibold text-green-500'>Cargando Casas...</h1>
                 :
-                data.filter((x:any) => x.contrato).map((alquiler:any) => (
-                    <RecommendedCard 
+                data && data.filter((x:any) => x.contrato).map((alquiler:any) => (
+                    <RecommendedCard
+                        key={alquiler.id} 
                         image={alquiler.imagen}          ubicacion={alquiler.ubicacion} 
                         valor={alquiler.valor}           dormitorios={alquiler.dormitorios} 
                         ambientes={alquiler.ambientes}   banos={alquiler.banos} 
@@ -58,6 +59,7 @@ export default function Alquiler(){
                 :
                 data.filter((x:any) => x.contrato).slice(0,2).map((alquiler:any) => (
                     <RecommendedCard 
+                        key={alquiler.id}
                         image={alquiler.imagen}          ubicacion={alquiler.ubicacion} 
                         valor={alquiler.valor}           dormitorios={alquiler.dormitorios} 
                         ambientes={alquiler.ambientes}   banos={alquiler.banos} 

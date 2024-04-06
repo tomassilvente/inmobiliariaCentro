@@ -4,7 +4,7 @@ import { Casa } from "@/types/casa.interface"
 import { useEffect, useState } from "react"
 import HorizontalCardAdmin from "./components/HorizontalCardAdmin"
 
-export default function casas(){
+export default function Casas(){
 
     const [data, setData] = useState<Array<Casa>>([])
     const [Loading, setLoading] = useState<boolean>(true)
@@ -26,10 +26,9 @@ export default function casas(){
         catch(error){ console.log(error)}
         finally {setLoading(false)}
     }
-
-    useEffect(()=>{
-        getCasas()
-    })
+  
+    getCasas()
+    
 
     return(
         <div className="py-5 m-5">
@@ -39,11 +38,12 @@ export default function casas(){
                 ? <h1 className='m-[150px] text-3xl font-semibold text-white'>Cargando Casas...</h1>
                 :
                     <div className="items-center flex flex-col">
-                        {data.sort(function(a: Casa,b: Casa):number{
+                        {data && data.sort(function(a: Casa,b: Casa):number{
                             if(a.ubicacion < b.ubicacion) return -1
                             else return 1
                         }).map((casa) => (
                             <HorizontalCardAdmin
+                                key={casa.id}
                                 image={casa.imagen}          ubicacion={casa.ubicacion} 
                                 valor={casa.valor}           dormitorios={casa.dormitorios} 
                                 ambientes={casa.ambientes}   banos={casa.banos} 

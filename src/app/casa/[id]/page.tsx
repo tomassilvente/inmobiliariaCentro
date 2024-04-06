@@ -2,9 +2,9 @@
 import { Casa } from "@/types/casa.interface"
 import Image from "next/image"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
-export default function casas({params}:any){
+export default function Casas({params}:any){
     const [data, setData] = useState<Array<Casa>>([])
     const [Loading, setLoading] = useState<boolean>(true)
     
@@ -26,9 +26,9 @@ export default function casas({params}:any){
         finally {setLoading(false)}
     }
 
-    useEffect(()=>{
+  
         getCasa()
-    }, [])
+  
     return(
         
         <div className="m-5 bg-white border shadow-lg rounded-xl ">

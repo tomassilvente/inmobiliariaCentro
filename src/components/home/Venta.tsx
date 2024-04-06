@@ -37,8 +37,9 @@ export default function Venta(){
                 Loading
                 ? <h1 className='mt-[170px] mb-[150px] text-3xl font-semibold text-green-500'>Cargando Casas...</h1>
                 :
-                data.filter((x:any) => x.contrato == null).map((venta:any) => (
+                data && data.filter((x:any) => x.contrato == null).map((venta:any) => (
                     <RecommendedCard 
+                        key={venta.id}
                         image={venta.imagen}          ubicacion={venta.ubicacion} 
                         valor={venta.valor}           dormitorios={venta.dormitorios} 
                         ambientes={venta.ambientes}   banos={venta.banos} 
@@ -53,6 +54,7 @@ export default function Venta(){
                 :
                 data.filter((x:any) => x.contrato == null).slice(0,2).map((venta:any) => (
                     <RecommendedCard 
+                        key={venta.id}
                         image={venta.imagen}          ubicacion={venta.ubicacion} 
                         valor={venta.valor}           dormitorios={venta.dormitorios} 
                         ambientes={venta.ambientes}   banos={venta.banos} 

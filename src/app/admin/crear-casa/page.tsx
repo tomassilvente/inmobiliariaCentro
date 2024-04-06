@@ -17,7 +17,7 @@ export type FormData = {
     cochera: number
 }
 
-export default function crearCasa(){
+export default function CrearCasa(){
     
     const [formData, setFormData] = useState<FormData>({
         imagen: '',
