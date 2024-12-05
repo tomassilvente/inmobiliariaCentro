@@ -2,6 +2,7 @@
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import Link from "next/link"
 
 export type FormData = {
     imagen: any,
@@ -86,142 +87,146 @@ export default function CrearCasa(){
         if(res) router.push('/admin')
       }
     return(
-        <div className="mx-[50px] bg-white rounded-xl pb-[50px] pt-[20px] my-[35px]">
-            <h1></h1>
-            <form onSubmit={handleSubmit} className=" p-[25px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:space-x-[15px] space-y-[15px]">
-                <div className="md:ml-[15px] mt-[15px]">
-                    <span className="text-sm ">Ubicación</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px] " 
-                        onChange={handleChange}
-                        name="ubicacion" 
-                        type="text" 
-                    />
-                </div>
-                <div>
-                    <span className="text-sm">Valor</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
-                        name="valor" 
-                        type="text" 
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <span className="text-sm">Tipo de Inmueble</span>
-                    <br />
-                    <select 
-                        defaultValue={'casa'} 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px] w-[175px]" 
-                        name="tipo"
-                        onChange={handleChange}
-                    >
-                        <option value={'casa'}>Casa</option>
-                        <option value={'departamento'}>Departamento</option>
-                        <option value={'local'}>Local</option>
-                    </select>
-                </div>
-                <div>
-                    <span className="text-sm">Ambientes</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
-                        name="ambientes" 
-                        type="number"
-                        defaultValue={1}
-                        onChange={handleChange}
-                        />
-                </div>
-                <div>
-                    <span className="text-sm">Dormitorios</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
-                        name="dormitorios" 
-                        type="number" 
-                        defaultValue={1}
-                        onChange={handleChange}
-                        />
-                </div>
-                
-                <div>
-                    <span className="text-sm">Baños</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
-                        name="banos" 
-                        type="number" 
-                        defaultValue={1}
-                        onChange={handleChange}
-                        />
-                </div>
-                <div>
-                    <span className="text-sm">Cochera</span>
-                    <br />
-                    <select 
-                        defaultValue={'false'} 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px] w-[175px]" 
-                        name="tipo"
-                        onChange={handleChange}
-                    >
-                        <option value={1}>Si</option>
-                        <option value={0}>No</option>
-                    </select>
-                </div>
-                <div>
-                    <span className="text-sm">Metros Cuadrados</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
-                        name="m2" 
-                        type="number" 
-                        defaultValue={30}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <span className="text-sm">Fecha de Contrato (si hay)</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]"
-                        name="contrato" 
-                        type="text" 
-                        placeholder="dd/mm/aaaa"
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <span className="text-sm">Dueño</span>
-                    <br />
-                    <input 
-                        className="font-light bg-gray-200 mt-[5px] rounded-md h-[30px] p-[10px]" 
-                        name="dueno" 
-                        type="text"
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <span className="text-sm">Insertar Imágenes</span>
-                    <br />
-                    <input 
-                        className="font-light mt-[5px] rounded-md h-[30px] md:w-[100%] w-[175px]" 
-                        multiple 
-                        type="file" 
-                        accept=".png, .jpg, .jpeg"
-                        onChange={e => {setFile(e.target.files)}}
-                    />
-                </div>
-                <br />
-                
-                <button 
-                    type="submit" 
-                    className="col-start-2 bg-green-500 h-[50px] rounded-xl text-white text-2xl"
-                >
-                    Enviar
-                </button>
-            </form>
+        <div className="mx-auto max-w-screen-lg px-4  bg-black bg-opacity-20 rounded-xl pb-8 pt-6 my-8 shadow-lg">
+            <Link className="ml-5" href={'/admin'}>
+                Volver
+            </Link>
+    <h1 className="text-center text-3xl font-semibold text-gray-500 mb-6">{formData.ubicacion || "Crear Propiedad"}</h1>
+    <form 
+        onSubmit={handleSubmit} 
+        className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-6 rounded-lg"
+    >
+        <div>
+            <label className="text-sm block">Ubicación</label>
+            <input 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                onChange={handleChange}
+                name="ubicacion" 
+                type="text" 
+            />
         </div>
+        
+        <div>
+            <label className="text-sm block">Valor</label>
+            <input 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="valor" 
+                type="text" 
+                onChange={handleChange}
+            />
+        </div>
+
+        <div>
+            <label className="text-sm block">Tipo de Inmueble</label>
+            <select 
+                defaultValue="casa" 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="tipo"
+                onChange={handleChange}
+            >
+                <option value="casa">Casa</option>
+                <option value="departamento">Departamento</option>
+                <option value="local">Local</option>
+            </select>
+        </div>
+
+        <div>
+            <label className="text-sm block">Ambientes</label>
+            <input 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="ambientes" 
+                type="number"
+                defaultValue={1}
+                onChange={handleChange}
+            />
+        </div>
+
+        <div>
+            <label className="text-sm block">Dormitorios</label>
+            <input 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="dormitorios" 
+                type="number" 
+                defaultValue={1}
+                onChange={handleChange}
+            />
+        </div>
+
+        <div>
+            <label className="text-sm block">Baños</label>
+            <input 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="banos" 
+                type="number" 
+                defaultValue={1}
+                onChange={handleChange}
+            />
+        </div>
+
+        <div>
+            <label className="text-sm block">Cochera</label>
+            <select 
+                defaultValue="false" 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="tipo"
+                onChange={handleChange}
+            >
+                <option value={1}>Sí</option>
+                <option value={0}>No</option>
+            </select>
+        </div>
+
+        <div>
+            <label className="text-sm block">Metros Cuadrados</label>
+            <input 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="m2" 
+                type="number" 
+                defaultValue={30}
+                onChange={handleChange}
+            />
+        </div>
+
+        <div>
+            <label className="text-sm block">Fecha de Contrato (si hay)</label>
+            <input 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="contrato" 
+                type="text" 
+                placeholder="dd/mm/aaaa"
+                onChange={handleChange}
+            />
+        </div>
+
+        <div>
+            <label className="text-sm block">Dueño</label>
+            <input 
+                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
+                name="dueno" 
+                type="text"
+                onChange={handleChange}
+            />
+        </div>
+
+        <div>
+            <label className="text-sm block">Insertar Imágenes</label>
+            <input 
+                className="w-full font-light mt-2 rounded-md h-10" 
+                multiple 
+                type="file" 
+                accept=".png, .jpg, .jpeg"
+                onChange={e => setFile(e.target.files)}
+            />
+        </div>
+
+        <button 
+            type="submit" 
+            className="col-span-full bg-green-500 h-12 rounded-xl text-white text-xl mt-4 w-full sm:w-1/2 mx-auto"
+        >
+            Enviar
+        </button>
+    </form>
+</div>
+
     )
 }

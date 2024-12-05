@@ -16,27 +16,77 @@ type CardProps={
     id:number
 }
 
+
+const deleteCasa = async (id) => {
+    try {
+        const response = await fetch(`http://localhost:3000/api/casas/${id}`, {
+            method: 'DELETE',
+            next: {
+                revalidate: 5000
+            }
+        });
+        if (response) { 
+            const data = await response.json();
+            if (data) {
+                
+            }
+        }
+    } catch (error) { 
+        console.log(error);
+    }
+};
+
+// const editCasa = async (id) => {
+//     try {
+//         const response = await fetch(`http://localhost:3000/api/casas/${id}`, {
+//             method: 'PUT',
+//             next: {
+//                 revalidate: 5000
+//             }
+//         });
+//         if (response) { 
+//             const data = await response.json();
+//             if (data) {
+                
+//             }
+//         }
+//     } catch (error) { 
+//         console.log(error);
+//     }
+// };
+
 export default function HorizontalCardAdmin({image, ubicacion,valor, dormitorios, ambientes, banos, cochera, tipo, m2, id}: CardProps){
     return(
-                   <div className="flex h-[200px] max-w-[900px] bg-white my-[15px] text-black border border-gray-200 shadow-lg rounded-xl">
-                <Image className="ml-[9px] mt-[9px] h-[180px] w-[220px] rounded-lg" src={image} height={180} width={220} alt={ubicacion}/>
-                <div>
-                    <div className="grid grid-cols-6">
-                        <h1 className="md:text-4xl text-xl ml-[20px] mt-3 col-start-1 col-end-5">{ubicacion}</h1>
-                        <Link className="w-[25px] h-[25px] md:h-[35px] md:w-[35px]" href={'/'}>
-                            <SvgTrashcan className="mt-3  ml-[40px] w-[25px] h-[25px] md:h-[35px] md:w-[35px]" height={35} width={35}/>
-                        </Link>
-                    </div>
-                    <div className="grid grid-cols-6">
-                        <h1 className="md:text-2xl text-lg ml-[20px] md:mt-2 text-green-600 col-start-1 col-end-5">{valor}</h1>
-                        <Link className="w-[25px] h-[25px] md:h-[35px] md:w-[35px]" href={'/'}>
-                            <SvgPen className="ml-[40px] w-[25px] h-[25px] md:h-[35px] md:w-[35px]" height={35} width={35}/>
-                        </Link>
-                    </div>
-                    <div className={`flex md:mt-3 mt-1 ml-[20px] md:w-[80%] w-[90%]`}>
-                        <p className="md:text-lg">Este inmueble se trata de {tipo === 'casa' ? 'una casa' : 'un departamento'} de {m2} metros cuadrados, la cual cuenta con {ambientes} ambientes, de los cuales son {dormitorios} {dormitorios>1 ? 'dormitorios' : 'dormitorio'} y {banos} {banos>1 ? 'baños' : 'baño'}. {cochera ? 'No cuenta' : 'Cuenta'} con cochera.</p>
-                    </div>
-                </div>
+        <div className="flex flex-col md:flex-row max-w-[900px] w-[70%] md:w-auto min-h-[200px] bg-white my-4 text-black border border-gray-200 shadow-lg rounded-xl">
+    <Image 
+        className="m-4 md:m-6 rounded-lg md:object-cover w-[150px] h-[150px] place-self-center" // Tamaño fijo para asegurar consistencia
+        src={image} 
+        height={150} 
+        width={150} 
+        alt={ubicacion}
+    />
+    <div className="flex flex-col flex-grow p-4 md:p-6">
+        <div className="flex items-center justify-between">
+            <h1 className="text-lg md:text-2xl font-semibold">{ubicacion}</h1>
+            <div onClick={() => deleteCasa(id)} className="cursor-pointer">
+                <SvgTrashcan className="w-6 h-6 md:w-8 md:h-8 text-red-600"/>
             </div>
+        </div>
+        <div className="flex items-center justify-between mt-2 md:mt-4">
+            <h2 className="text-md md:text-xl text-green-600 font-medium">{valor}</h2>
+            <Link href={`/admin/casas/${id}`} className="cursor-pointer">
+                <SvgPen className="w-6 h-6 md:w-8 md:h-8 text-blue-500"/>
+            </Link>
+        </div>
+        <div className="mt-3 text-sm md:text-md">
+            <p>
+                Este inmueble es {tipo === 'casa' ? 'una casa' : 'un departamento'} de {m2} m², cuenta con {ambientes} ambientes: {dormitorios} {dormitorios > 1 ? 'dormitorios' : 'dormitorio'} y {banos} {banos > 1 ? 'baños' : 'baño'}. {cochera ? 'No tiene' : 'Tiene'} cochera.
+            </p>
+        </div>
+    </div>
+</div>
+
+    
+    
     )
 }

@@ -18,10 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="bg-[#d0cdc4] text-black " lang="en">
-      <body className={`${oswald.className} antialiased flex flex-col min-h-screen bg-[#d0cdc4] justify-between`}>
+    <html className=" text-black " lang="en">
+      <body className={`${oswald.className} antialiased flex flex-col min-h-screen justify-between`}>
         <NavBar />
-        <div className="bg-[#d0cdc4] text-black p-5 ">
+        <div className=" text-black p-5 ">
           {children}
         </div>
         <Footer />

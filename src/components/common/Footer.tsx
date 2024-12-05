@@ -56,13 +56,13 @@ export default function Footer(){
       <p className="text-primary mb-4 text-2xl font-semibold not-italic tracking-[-0.52px]">
           Navegar
       </p>
-      <Link href="/home" className="mb-4 sm:text-[17px] text-[15px] not-italic font-medium leading-[31px] tracking-[-0.42px] hover:text-gray-300">
+      <Link href="/" className="mb-4 sm:text-[17px] text-[15px] not-italic font-medium leading-[31px] tracking-[-0.42px] hover:text-[#a49271]">
           Home
       </Link>
-      <Link href="/alquileres" className="mb-4 sm:text-[17px] text-[15px] not-italic font-medium leading-[31px] tracking-[-0.42px] hover:text-gray-300">
+      <Link href="/alquileres" className="mb-4 sm:text-[17px] text-[15px] not-italic font-medium leading-[31px] tracking-[-0.42px] hover:text-[#a49271]">
           Alquileres
       </Link>
-      <Link href="/venta" className="mb-4 sm:text-[17px] text-[15px] not-italic font-medium leading-[31px] tracking-[-0.42px] hover:text-gray-300">
+      <Link href="/venta" className="mb-4 sm:text-[17px] text-[15px] not-italic font-medium leading-[31px] tracking-[-0.42px] hover:text-[#a49271]">
           Ventas
       </Link>
   </div>
@@ -118,6 +118,13 @@ export default function Footer(){
           <div className="justify-start lg:w-[55%] w-full">
             <p className="text-start lg:text-base text-sm leading-[31px] font-semibold not-italic">
               Copyright © 2024 Inmobiliaria Centro. All rights reserved
+            </p>
+          </div>
+          <div className="justify-start lg:w-[55%] w-full">
+            <p className="text-end lg:text-base text-sm leading-[31px] font-semibold not-italic">
+              <Link href={'/admin'}>
+                Administración
+              </Link>
             </p>
           </div>
         </section>

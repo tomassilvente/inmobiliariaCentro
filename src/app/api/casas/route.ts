@@ -25,13 +25,6 @@ export async function GET(){
     }
 }
 
-export async function PUT(request:any){
-
-    const data = await request.json()
-
-    return NextResponse.json('Casa Guardada')
-}
-
 export async function POST(request:any) {
   try {
     const data = await request.formData();
@@ -96,7 +89,4 @@ export async function POST(request:any) {
       }
     );
   }
-}
-export async function DELETE(){
-
 }

@@ -20,7 +20,7 @@ export default function Admin(){
                 <UserButton  afterSignOutUrl='/'/>
                 <p className=' ml-3 text-xl md:text-2xl 2xl:text-3xl'>Praussello Yanina</p>
             </div>
-            <div className='grid-cols-3 grid ml-[10%] 2xl:ml-[13%] mt-[30px] text-center lg:text-xl'>
+            <div className='grid-cols-2 grid ml-[12%] 2xl:ml-[22%] mt-[30px] text-center lg:text-xl'>
                 <Link className='w-[70%]' href={'/admin/crear-casa'}>
                     <div className='max-w-[280px] border rounded-lg p-5'>
                         Crear Inmueble
@@ -31,12 +31,6 @@ export default function Admin(){
                     <div className=' max-w-[280px] border rounded-lg p-5'>
                         Ver Inmuebles
                         <SvgHouseList className='w-[100%] h-[100%]' height={240} width={200}/>
-                    </div>
-                    </Link>
-                <Link className='w-[70%]' href={'/admin/nosotros'}>
-                    <div className='max-w-[280px] border rounded-lg p-5 '>
-                        Modificar Nosotros
-                        <SvgPaper className='w-[100%] h-[100%]' height={240} width={200}/>
                     </div>
                 </Link>
             </div>

@@ -1,68 +1,76 @@
 "use client"
-import { useEffect, useState } from 'react'
-import RecommendedCard from './RecommendedCards'
-import { Casa } from '@/types/casa.interface'
+import { useEffect, useState } from 'react';
+import RecommendedCard from './RecommendedCards';
+import { Casa } from '@/types/casa.interface';
 
-export default function Venta(){
+export default function Venta() {
+    const [data, setData] = useState<Array<Casa>>([]);
+    const [Loading, setLoading] = useState<boolean>(true);
 
-    const [data, setData] = useState<Array<Casa>>([])
-    const [Loading, setLoading] = useState<boolean>(true)
-
-    const getCasas = async()=>{
-        try{
-            const response = await fetch(`http://localhost:3000/api/casas/`,{
-                method:'GET',
-                next:{
-                    revalidate: 5000
-                }
-            })
-            if(response){ 
-            const data = await response.json()
-            console.log(data)
-            if(data) setData(data)
+    const getCasas = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/casas/`, {
+                method: 'GET',
+                next: { revalidate: 5000 }
+            });
+            if (response) { 
+                const data = await response.json();
+                if (data) setData(data);
             }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
         }
-        catch(error){ console.log(error)}
-        finally {setLoading(false)}
     }
 
-    useEffect(()=>{
-        getCasas()
-    })
-    return(
-        <div className='mt-5 py-5 bg-white rounded-xl border '>
-            <h1 className="text-center text-3xl font-semibold ">Últimos inmuebles en venta</h1>
-            <div className='md:flex justify-center mt-8 hidden'>
-            {
-                Loading
-                ? <h1 className='mt-[170px] mb-[150px] text-3xl font-semibold text-green-500'>Cargando Casas...</h1>
-                :
-                data && data.filter((x:any) => x.contrato == null).map((venta:any) => (
-                    <RecommendedCard 
-                        key={venta.id}
-                        image={venta.imagen}          ubicacion={venta.ubicacion} 
-                        valor={venta.valor}           dormitorios={venta.dormitorios} 
-                        ambientes={venta.ambientes}   banos={venta.banos} 
-                        cochera={venta.cochera}       id={venta.id}/>
-                ))
-            }
-            </div>
-            <div className='md:hidden justify-center mt-8 flex'>
-            {
-                Loading
-                ? <h1 className='mt-[170px] mb-[150px] text-3xl font-semibold text-green-500'>Cargando Casas...</h1>
-                :
-                data.filter((x:any) => x.contrato == null).slice(0,2).map((venta:any) => (
-                    <RecommendedCard 
-                        key={venta.id}
-                        image={venta.imagen}          ubicacion={venta.ubicacion} 
-                        valor={venta.valor}           dormitorios={venta.dormitorios} 
-                        ambientes={venta.ambientes}   banos={venta.banos} 
-                        cochera={venta.cochera}       id={venta.id}
-                    />
-                ))
-            }
-            </div>
+    useEffect(() => {
+        getCasas();
+    }, []);
+
+    return (
+        <div className="mt-5 py-8 px-4 bg-[#fffbdc] rounded-lg border shadow-lg max-w-6xl mx-auto">
+            <h1 className="text-center text-3xl font-bold text-gray-800">Últimos inmuebles en venta</h1>
+
+            {Loading ? (
+                <h1 className="text-center mt-[150px] mb-[150px] text-2xl font-medium text-gray-600">Cargando Casas...</h1>
+            ) : (
+                <>
+                    {/* Versión de escritorio */}
+                    <div className="hidden md:flex flex-wrap justify-center gap-6 mt-8">
+                        {data.filter((x: Casa) => x.contrato == null).map((venta: Casa) => (
+                            <RecommendedCard 
+                                key={venta.id}
+                                id={venta.id}
+                                image={venta.imagen}
+                                ubicacion={venta.ubicacion}
+                                valor={venta.valor}
+                                dormitorios={venta.dormitorios}
+                                ambientes={venta.ambientes}
+                                banos={venta.banos}
+                                cochera={venta.cochera}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Versión móvil */}
+                    <div className="flex md:hidden flex-wrap justify-center gap-6 mt-8">
+                        {data.filter((x: Casa) => x.contrato == null).slice(0, 2).map((venta: Casa) => (
+                            <RecommendedCard 
+                                key={venta.id}
+                                id={venta.id}
+                                image={venta.imagen}
+                                ubicacion={venta.ubicacion}
+                                valor={venta.valor}
+                                dormitorios={venta.dormitorios}
+                                ambientes={venta.ambientes}
+                                banos={venta.banos}
+                                cochera={venta.cochera}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
         </div>
-    ) 
+    );
 }
