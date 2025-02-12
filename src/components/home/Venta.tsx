@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import RecommendedCard from './RecommendedCards';
 import { Casa } from '@/types/casa.interface';
+import Link from 'next/link';
 
 export default function Venta() {
     const [data, setData] = useState<Array<Casa>>([]);
@@ -28,9 +29,17 @@ export default function Venta() {
         getCasas();
     }, []);
 
+    // Filtrar las casas en venta que no tienen contrato y ordenar por id descendente
+    const filteredData = data
+        .filter((casa: Casa) => casa.contrato == null) // Solo casas sin contrato
+        .sort((a, b) => b.id - a.id) // Ordenar por id descendente (últimas casas primero)
+        .slice(0, 3); // Tomar solo las 3 últimas casas
+
     return (
         <div className="mt-5 py-8 px-4 bg-[#fffbdc] rounded-lg border shadow-lg max-w-6xl mx-auto">
-            <h1 className="text-center text-3xl font-bold text-gray-800">Últimos inmuebles en venta</h1>
+            <Link href='/venta' >
+                <h1 className="text-center text-3xl font-bold text-gray-800 hover:text-gray-400">Últimos inmuebles en venta</h1>
+            </Link>
 
             {Loading ? (
                 <h1 className="text-center mt-[150px] mb-[150px] text-2xl font-medium text-gray-600">Cargando Casas...</h1>
@@ -38,7 +47,7 @@ export default function Venta() {
                 <>
                     {/* Versión de escritorio */}
                     <div className="hidden md:flex flex-wrap justify-center gap-6 mt-8">
-                        {data.filter((x: Casa) => x.contrato == null).map((venta: Casa) => (
+                        {filteredData.map((venta: Casa) => (
                             <RecommendedCard 
                                 key={venta.id}
                                 id={venta.id}
@@ -55,7 +64,7 @@ export default function Venta() {
 
                     {/* Versión móvil */}
                     <div className="flex md:hidden flex-wrap justify-center gap-6 mt-8">
-                        {data.filter((x: Casa) => x.contrato == null).slice(0, 2).map((venta: Casa) => (
+                        {filteredData.slice(0, 2).map((venta: Casa) => (
                             <RecommendedCard 
                                 key={venta.id}
                                 id={venta.id}

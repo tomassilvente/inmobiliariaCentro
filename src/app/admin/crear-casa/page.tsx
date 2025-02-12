@@ -13,7 +13,6 @@ export type FormData = {
     contrato?: string | null,
     tipo:string,
     m2:number,
-    dueno:string,
     banos: number,
     cochera: number
 }
@@ -29,7 +28,6 @@ export default function CrearCasa(){
         contrato: null,
         tipo:'', 
         m2:0,
-        dueno:'',
         banos: 0,
         cochera: 0
       })
@@ -57,7 +55,6 @@ export default function CrearCasa(){
         if (!formData.valor) {errs.valor = 'Valor Requerido'; errores = errores + ' Valor'}
         if (!formData.tipo) {errs.tipo = 'Tipo Requerido'; errores = errores + ' Tipo'}
         if (formData.m2 < 1) {errs.m2 = 'm2 Requerido'; errores = errores + ' M2'}
-        if (!formData.dueno) {errs.dueno = 'Dueño Requerido'; errores = errores + ' Dueño'}
         if (formData.banos < 1) {errs.banos = 'Al menos 1 baño Requerida'; errores = errores + ' Baños'}
     
         if (Object.keys(errs).length > 0) valid = false
@@ -166,7 +163,7 @@ export default function CrearCasa(){
         <div>
             <label className="text-sm block">Cochera</label>
             <select 
-                defaultValue="false" 
+                defaultValue={0}
                 className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
                 name="tipo"
                 onChange={handleChange}
@@ -197,17 +194,6 @@ export default function CrearCasa(){
                 onChange={handleChange}
             />
         </div>
-
-        <div>
-            <label className="text-sm block">Dueño</label>
-            <input 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="dueno" 
-                type="text"
-                onChange={handleChange}
-            />
-        </div>
-
         <div>
             <label className="text-sm block">Insertar Imágenes</label>
             <input 

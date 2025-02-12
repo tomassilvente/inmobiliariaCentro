@@ -1,38 +1,54 @@
-import {UserButton, auth, useUser} from '@clerk/nextjs'
-import Image from 'next/image';
+import { UserButton, auth } from '@clerk/nextjs'
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import SvgNewHouse from '../../../public/assets/newHouse';
 import SvgPaper from '../../../public/assets/paper';
 import SvgHouseList from '../../../public/assets/houseList';
+import SvgPeople from '../../../public/assets/people';
 
-export default function Admin(){
-    const {userId} = auth();
+export default function Admin() {
+    const { userId } = auth();
 
-    if(!userId){
+    if (!userId) {
         redirect('/')
     }
-            
-    return(
-        <div className="mx-[50px] bg-white rounded-xl pb-[50px] pt-[20px] my-[35px]">
-            <p className="2xl:text-5xl text-3xl text-green-500 text-center">Bienvenido!</p>
-            <div className='mx-[28%] 2xl:ml-[43%] xl:ml-[42%] lg:ml-[40%] md:ml-[34%] sm:ml-[33%] flex mt-[10px]'>
-                <UserButton  afterSignOutUrl='/'/>
-                <p className=' ml-3 text-xl md:text-2xl 2xl:text-3xl'>Praussello Yanina</p>
-            </div>
-            <div className='grid-cols-2 grid ml-[12%] 2xl:ml-[22%] mt-[30px] text-center lg:text-xl'>
-                <Link className='w-[70%]' href={'/admin/crear-casa'}>
-                    <div className='max-w-[280px] border rounded-lg p-5'>
-                        Crear Inmueble
-                        <SvgNewHouse className='w-[100%] h-[100%]' height={240} width={200}/>
-                    </div>
-                </Link>
-                <Link className='w-[70%]' href={'/admin/casas'}>
-                    <div className=' max-w-[280px] border rounded-lg p-5'>
-                        Ver Inmuebles
-                        <SvgHouseList className='w-[100%] h-[100%]' height={240} width={200}/>
-                    </div>
-                </Link>
+
+    return (
+        <div className="flex justify-center items-center min-h-screen ">
+            <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8">
+                <p className="text-4xl text-green-500 text-center font-semibold">Bienvenido!</p>
+                
+                <div className="flex flex-col items-center mt-4">
+                    <UserButton afterSignOutUrl='/' />
+                    <p className="mt-2 text-xl md:text-2xl 2xl:text-3xl font-medium">Praussello Yanina</p>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8 place-items-center">
+                    <Link className="w-full max-w-[280px]" href={'/admin/crear-casa'}>
+                        <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
+                            <p className="font-semibold text-lg mb-2">Crear Inmueble</p>
+                            <SvgNewHouse className="w-full h-auto" height={200} width={180} />
+                        </div>
+                    </Link>
+                    <Link className="w-full max-w-[280px]" href={'/admin/casas'}>
+                        <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
+                            <p className="font-semibold text-lg mb-2">Ver Inmuebles</p>
+                            <SvgHouseList className="w-full h-auto" height={200} width={180} />
+                        </div>
+                    </Link>
+                    <Link className="w-full max-w-[280px]" href={'/admin/clientes'}>
+                        <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
+                            <p className="font-semibold text-lg mb-2">Clientes</p>
+                            <SvgPeople className="w-full h-auto" height={200} width={180} />
+                        </div>
+                    </Link>
+                    <Link className="w-full max-w-[280px]" href={'/admin/recibo'}>
+                        <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
+                            <p className="font-semibold text-lg mb-2">Generar Recibo</p>
+                            <SvgPaper className="w-full h-auto" height={200} width={180} />
+                        </div>
+                    </Link>
+                </div>
             </div>
         </div>
     )

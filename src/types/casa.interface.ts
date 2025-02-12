@@ -10,5 +10,8 @@ export interface Casa{
     m2:number,
     dueno:string,
     banos: number,
-    cochera: boolean
+    cochera: boolean,
+    inquilino?: number,
+    pago?: string,
+    comprobanteUltimo?: string
 }

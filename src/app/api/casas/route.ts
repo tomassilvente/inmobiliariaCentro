@@ -69,7 +69,6 @@ export async function POST(request:any) {
           contrato: data.get('contrato') ,
           tipo: data.get('tipo'),
           m2: data.get('m2'),
-          dueno: data.get('dueno'),
           banos: data.get('banos'),
           cochera: data.get('cochera'),
           imagen: res.secure_url,
