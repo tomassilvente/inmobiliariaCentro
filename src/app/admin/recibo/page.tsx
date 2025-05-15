@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { useRouter } from "next/navigation";
 
 export default function InvoiceGenerator() {
   const [casas, setCasas] = useState([]);
@@ -16,6 +17,8 @@ export default function InvoiceGenerator() {
     date: new Date().toISOString().split("T")[0],
     inicioContrato: ""
   });
+
+  const router = useRouter()
 
   useEffect(() => {
     const fetchCasas = async () => {
@@ -120,13 +123,14 @@ export default function InvoiceGenerator() {
         method: "PUT",
         body: formData,
       });
+      router.push('/admin')
     } catch (error) {
       console.error("Error al marcar el pago en efectivo:", error);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div className="max-w-4xl my-16 mx-auto p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Generador de Facturas</h2>
       <select onChange={handleCasaChange} className="w-full p-2 border rounded mb-4">
         <option value="">Selecciona una casa</option>

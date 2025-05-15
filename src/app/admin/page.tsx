@@ -27,27 +27,35 @@ export default function Admin() {
                     <Link className="w-full max-w-[280px]" href={'/admin/crear-casa'}>
                         <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
                             <p className="font-semibold text-lg mb-2">Crear Inmueble</p>
-                            <SvgNewHouse className="w-full h-auto" height={200} width={180} />
+                            <SvgNewHouse className="w-full h-auto" height={150} width={150} />
                         </div>
                     </Link>
                     <Link className="w-full max-w-[280px]" href={'/admin/casas'}>
                         <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
                             <p className="font-semibold text-lg mb-2">Ver Inmuebles</p>
-                            <SvgHouseList className="w-full h-auto" height={200} width={180} />
+                            <SvgHouseList className="w-full h-auto" height={150} width={150} />
                         </div>
                     </Link>
                     <Link className="w-full max-w-[280px]" href={'/admin/clientes'}>
                         <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
                             <p className="font-semibold text-lg mb-2">Clientes</p>
-                            <SvgPeople className="w-full h-auto" height={200} width={180} />
+                            <SvgPeople className="w-full h-auto" height={150} width={150} />
                         </div>
                     </Link>
-                    <Link className="w-full max-w-[280px]" href={'/admin/recibo'}>
-                        <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
-                            <p className="font-semibold text-lg mb-2">Generar Recibo</p>
-                            <SvgPaper className="w-full h-auto" height={200} width={180} />
-                        </div>
-                    </Link>
+                    <div className='flex'>
+                        <Link className="w-full max-w-[280px]" href={'/admin/recibo'}>
+                            <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
+                                <p className="font-semibold text-lg mb-2">Generar Recibo</p>
+                                <SvgPaper className="w-full h-auto" height={150} width={150} />
+                            </div>
+                        </Link>
+                        <Link className="w-full max-w-[280px]" href={'/admin/historialPagos'}>
+                            <div className="border rounded-lg p-5 text-center bg-white shadow-md hover:shadow-lg transition">
+                                <p className="font-semibold text-lg mb-2">Historial de pagos</p>
+                                <SvgPaper className="w-full h-auto" height={150} width={150} />
+                            </div>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
