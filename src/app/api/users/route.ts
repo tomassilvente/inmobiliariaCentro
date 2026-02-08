@@ -5,66 +5,108 @@ import jwt from "jsonwebtoken";
 
 const SECRET_KEY = process.env.SECRET_KEY || "mi_clave_secreta";
 
-export async function POST(request: any) {
+/* ===========================
+   ✅ GET — listar usuarios
+=========================== */
+
+export async function GET() {
   try {
-    const data = await request.json();
+    const [rows]: any = await (await connection).query(`
+      SELECT
+        id,
+        documento,
+        nombre,
+        email
+      FROM users
+      ORDER BY nombre ASC
+    `);
 
-    console.log(data)
-    const { nombre, documento, email, password } = data;
-
-    // Verificar si el email ya está registrado
-    let existingUser = ''
-    if(email.length > 0) existingUser = await (await connection).query("SELECT * FROM users WHERE email = ?", [email]);
-
-    if (existingUser.length > 0) {
-      return NextResponse.json({ message: "El email ya está registrado" }, { status: 400 });
-    }
-
-    // Encriptar contraseña
-    let hashedPassword = ''
-    if(password.length > 0){
-      hashedPassword = await bcrypt.hash(password, 10);
-    } 
-    // Insertar el nuevo usuario en la base de datos
-    const result = await (await connection).query("INSERT INTO users SET ?", {
-      nombre,
-      documento,
-      email,
-      password: hashedPassword,
-    });
-
-    // Generar token JWT
-    const token = jwt.sign(
-      { id: result.insertId, email, nombre },
-      SECRET_KEY,
-      { expiresIn: "1h" } // Token válido por 1 hora
-    );
-
-    return NextResponse.json({
-      message: "Usuario registrado con éxito",
-      token, // Enviar el token al cliente
-    });
+    return NextResponse.json(rows);
   } catch (error: any) {
+    console.error("ERROR USERS GET:", error);
+
     return NextResponse.json(
-      { message: error.message },
+      { message: "Error obteniendo usuarios" },
       { status: 500 }
     );
   }
 }
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    const { nombre, documento, email, password } = data;
 
-export async function GET(){
-  try{
-      const users = (await connection).query('SELECT * FROM users')
-      return NextResponse.json((await users)[0])
-  }
-  catch(error:any){
+    if (!nombre || !documento || !email) {
       return NextResponse.json(
-          {
-              message: error.message,
-          },
-          {
-              status:500
-          }
-      )
+        { message: "Faltan datos obligatorios" },
+        { status: 400 }
+      );
+    }
+
+    const conn = await connection;
+
+    // 🔍 validar duplicados (EMAIL o DNI)
+    const [exists]: any = await conn.query(
+      `
+      SELECT id
+      FROM users
+      WHERE email = ? OR documento = ?
+      LIMIT 1
+      `,
+      [email, documento]
+    );
+
+    if (exists.length > 0) {
+      return NextResponse.json(
+        { message: "Ya existe un cliente con ese email o DNI" },
+        { status: 400 }
+      );
+    }
+
+    let hashedPassword = null;
+
+    // 🔐 solo si viene password
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    const [result]: any = await conn.query(
+      `
+      INSERT INTO users (nombre, documento, email, password)
+      VALUES (?, ?, ?, ?)
+      `,
+      [nombre, documento, email, hashedPassword]
+    );
+
+    // 👉 si NO hay password (admin), no generamos token
+    if (!password) {
+      return NextResponse.json({
+        success: true,
+        id: result.insertId,
+      });
+    }
+
+    // 👉 si hay password (registro/login), generamos token
+    const token = jwt.sign(
+      {
+        id: result.insertId,
+        email,
+        nombre,
+      },
+      SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    return NextResponse.json({
+      message: "Usuario registrado con éxito",
+      token,
+    });
+
+  } catch (error: any) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Error interno del servidor" },
+      { status: 500 }
+    );
   }
 }

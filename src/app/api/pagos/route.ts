@@ -1,53 +1,106 @@
-import { connection } from "@/libs/db";
 import { NextResponse } from "next/server";
+import { connection } from "@/libs/db";
+import { v2 as cloudinary } from "cloudinary";
 
-// OBTENER HISTORIAL DE PAGOS
-export async function GET(request: Request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const casaId = searchParams.get("casa_id");
-        const inquilinoId = searchParams.get("inquilino_id");
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
 
-        let query = `
-            SELECT 
-                c.id AS casa_id,
-                c.ubicacion,
-                c.valor,
-                c.inquilino,
-                u.nombre AS inquilino_nombre,
-                c.valor AS monto,
-                c.comprobanteUltimo AS comprobante,
-                c.pago AS fecha_pago
-            FROM casas c
-            JOIN users u ON c.inquilino = u.documento
-            WHERE contrato IS NOT NULL
-        `;
-        
-        let values: any[] = [];
-        let conditions: string[] = [];
 
-        if (casaId) {
-            conditions.push("c.id = ?");
-            values.push(casaId);
-        }
+export async function GET() {
+  try {
+    const conn = await connection;
 
-        if (inquilinoId) {
-            conditions.push("c.inquilino = ?");
-            values.push(inquilinoId);
-        }
+    const [rows]: any = await conn.query(`
+      SELECT
+        p.id,
+        p.monto,
+        p.fecha_pago,
+        p.comprobante_url AS comprobante,
 
-        if (conditions.length > 0) {
-            query += " WHERE " + conditions.join(" AND ");
-        }
+        -- Inquilino
+        u.nombre AS inquilino_nombre,
+        u.documento AS inquilino,
 
-        const [pagos] = await (await connection).query(query, values);
+        -- Casa
+        ca.ubicacion
 
-        return NextResponse.json(pagos);
-    } catch (error: any) {
-        console.error("Error en la consulta:", error);
-        return NextResponse.json(
-            { message: "Error interno del servidor", error: error.message },
-            { status: 500 }
-        );
+      FROM pagos p
+      JOIN contratos c ON c.id = p.contrato_id
+      JOIN users u ON u.id = c.inquilino_id   -- 🔥 CLAVE
+      JOIN casas ca ON ca.id = c.casa_id
+
+      ORDER BY p.fecha_pago DESC
+    `);
+
+    return NextResponse.json(rows);
+  } catch (error) {
+    console.error("ERROR GET PAGOS:", error);
+    return NextResponse.json(
+      { message: "Error obteniendo pagos" },
+      { status: 500 }
+    );
+  }
+}
+
+/*
+POST → registrar pago
+*/
+export async function POST(request: Request) {
+  try {
+    const formData = await request.formData();
+
+    const contrato_id = formData.get("contrato_id");
+    const fecha_pago = formData.get("fecha_pago");
+    const monto = formData.get("monto");
+    const metodo_pago = formData.get("metodo_pago") || "efectivo";
+    const comprobante = formData.get("comprobante");
+
+    let comprobante_url = null;
+
+    // ☁️ subir comprobante si existe
+    if (comprobante && comprobante instanceof Blob) {
+      const buffer = Buffer.from(await comprobante.arrayBuffer());
+
+      const upload: any = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ resource_type: "image" }, (err, result) => {
+            if (err) reject(err);
+            resolve(result);
+          })
+          .end(buffer);
+      });
+
+      comprobante_url = upload.secure_url;
     }
+
+    const [result]: any = await (await connection).query(
+      `
+      INSERT INTO pagos
+      (contrato_id, fecha_pago, monto, metodo_pago, comprobante_url)
+      VALUES (?, ?, ?, ?, ?)
+      `,
+      [
+        contrato_id,
+        fecha_pago,
+        monto,
+        metodo_pago,
+        comprobante_url,
+      ]
+    );
+
+    return NextResponse.json({
+      success: true,
+      pago_id: result.insertId,
+      comprobante_url,
+    });
+  } catch (error: any) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Error registrando pago" },
+      { status: 500 }
+    );
+  }
 }

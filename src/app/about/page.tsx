@@ -1,52 +1,106 @@
 "use client";
+
 import Image from "next/image";
 
 export default function Nosotros() {
   return (
-    <div className="flex flex-col items-center justify-center p-8 md:p-12 bg-white text-gray-800">
-      <h1 className="text-4xl font-bold text-center text-gray-800 mb-4">
-        Nuestra Historia
-      </h1>
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mt-6">
-        <div className="md:w-1/2 lg:w-1/3 flex justify-center">
-          <Image
-            src="/images/unnamed.jpg"
-            alt="Fachada de la inmobiliaria"
-            width={400}
-            height={400}
-            className="rounded-lg shadow-lg"
-          />
-        </div>
-        <div className="md:w-1/2 lg:w-2/3">
-          <p className="text-lg leading-relaxed text-gray-600 mb-4">
-            Desde su fundación en 2005, Inmobiliaria Centro ha sido un pilar en
-            la comunidad de Punta Alta. Creada por la Sra. María Ester Vivas,
-            quien decidió abrir sus puertas en 25 de mayo 482, esta inmobiliaria
-            comenzó con una simple misión: brindar a las familias de la ciudad
-            un lugar seguro y confiable para encontrar el hogar de sus sueños.
-          </p>
-          <p className="text-lg leading-relaxed text-gray-600 mb-4">
-            En sus primeros días, María Ester Vivas trabajaba con un pequeño
-            equipo, dedicándose personalmente a cada cliente que cruzaba sus
-            puertas. Su ética de trabajo, integridad y profundo conocimiento del
-            mercado local pronto posicionaron a Inmobiliaria Vivas como una de
-            las agencias más respetadas de la región.
-          </p>
-          <p className="text-lg leading-relaxed text-gray-600">
-            A lo largo de los años, la empresa ha crecido, pero su esencia sigue
-            siendo la misma: ofrecer un servicio personalizado y cercano. Hoy,
-            Inmobiliaria Vivas sigue guiada por los valores de su fundadora,
-            comprometida en ayudar a la gente de Punta Alta a encontrar su hogar
-            ideal y acompañarlos en cada paso del proceso.
+    <section className="bg-[#fafafa] py-20 px-6">
+      <div className="max-w-6xl mx-auto">
+
+        {/* HEADER */}
+        <div className="text-center mb-16">
+          <span className="text-sm tracking-widest uppercase text-[#8a7b5e] font-semibold">
+            Desde 2005
+          </span>
+
+          <h1 className="text-4xl md:text-5xl font-bold text-[#212121] mt-3">
+            Inmobiliaria Centro
+          </h1>
+
+          <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
+            Más de 20 años acompañando a las familias de Punta Alta en uno de los
+            momentos más importantes de sus vidas.
           </p>
         </div>
+
+        {/* CONTENT */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
+
+          {/* IMAGE */}
+          <div className="relative">
+            <div className="absolute -top-6 -left-6 w-full h-full border-2 border-[#8a7b5e]/40 rounded-2xl" />
+
+            <Image
+              src="/images/unnamed.jpg"
+              alt="Inmobiliaria Centro Punta Alta"
+              width={520}
+              height={520}
+              className="relative rounded-2xl shadow-xl object-cover"
+            />
+          </div>
+
+          {/* TEXT */}
+          <div>
+            <h2 className="text-2xl font-semibold text-[#212121] mb-6">
+              Nuestra historia
+            </h2>
+
+            <p className="text-gray-600 leading-relaxed mb-5">
+              Inmobiliaria Centro nació en el año 2005 de la mano de la Sra.
+              <strong> María Ester Vivas</strong>, con el objetivo de brindar un
+              servicio inmobiliario honesto, cercano y profesional en la ciudad
+              de Punta Alta.
+            </p>
+
+            <p className="text-gray-600 leading-relaxed mb-5">
+              Desde sus inicios en <strong>25 de Mayo 482</strong>, la empresa se
+              consolidó gracias al trato personalizado, el profundo conocimiento
+              del mercado local y el compromiso real con cada cliente.
+            </p>
+
+            <p className="text-gray-600 leading-relaxed">
+              Hoy, más de dos décadas después, seguimos trabajando con la misma
+              filosofía: acompañar a cada familia con transparencia, confianza y
+              dedicación en cada operación.
+            </p>
+
+            {/* HIGHLIGHT */}
+            <div className="mt-8 p-6 border-l-4 border-[#8a7b5e] bg-white rounded-xl shadow-sm">
+              <p className="text-lg font-medium text-[#212121]">
+                Tu hogar no es solo una propiedad.
+              </p>
+              <p className="text-gray-600 mt-1">
+                Es el lugar donde empieza tu historia.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* STATS */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 text-center">
+
+          <div>
+            <p className="text-4xl font-bold text-[#8a7b5e]">+20</p>
+            <p className="text-gray-600 mt-1">Años de experiencia</p>
+          </div>
+
+          <div>
+            <p className="text-4xl font-bold text-[#8a7b5e]">+1000</p>
+            <p className="text-gray-600 mt-1">Operaciones realizadas</p>
+          </div>
+
+          <div>
+            <p className="text-4xl font-bold text-[#8a7b5e]">100%</p>
+            <p className="text-gray-600 mt-1">Atención personalizada</p>
+          </div>
+
+          <div>
+            <p className="text-4xl font-bold text-[#8a7b5e]">Punta Alta</p>
+            <p className="text-gray-600 mt-1">Desde 2005</p>
+          </div>
+
+        </div>
       </div>
-      <div className="mt-10 text-center">
-        <p className="text-xl font-semibold text-green-700">
-          Estamos aquí para acompañarte en cada decisión, porque tu hogar es
-          nuestra pasión.
-        </p>
-      </div>
-    </div>
+    </section>
   );
 }

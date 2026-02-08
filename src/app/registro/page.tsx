@@ -1,34 +1,36 @@
-'use client'
-import React, { useState } from "react";
-import { useRouter } from 'next/navigation';
+'use client';
 
-const RegisterForm = () => {
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+export default function RegisterForm() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     nombre: "",
     documento: "",
     email: "",
     password: "",
     password2: "",
-    tipoCliente:""
+    tipoCliente: "NULL",
   });
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const router = useRouter()
-
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
 
-    
-    // Validar contraseñas
     if (formData.password !== formData.password2) {
       setErrorMessage("Las contraseñas no coinciden");
       return;
@@ -37,142 +39,198 @@ const RegisterForm = () => {
     try {
       const response = await fetch("/api/users", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        setErrorMessage(errorData.message || "Error al registrar usuario");
+        setErrorMessage(data.message || "Error al registrar usuario");
         return;
       }
 
-      const data = await response.json();
-      setSuccessMessage("Usuario registrado exitosamente");
-      console.log("Registro exitoso:", data);
+      setSuccessMessage("Usuario registrado correctamente");
       localStorage.setItem("token", data.token);
-      router.push('/')
-      
-    } catch (error) {
-      console.error("Error durante el registro:", error);
-      setErrorMessage("Ocurrió un error. Por favor, inténtalo de nuevo.");
+
+      setTimeout(() => {
+        router.push("/");
+      }, 1200);
+    } catch {
+      setErrorMessage("Ocurrió un error. Intentalo nuevamente.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center my-10 ">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Crear Cuenta</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-1">
-              Nombre Completo
+    <section className="min-h-[80vh] flex items-center justify-center my-10">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-10 min-w-[500px]">
+
+        {/* HEADER */}
+        <div className="text-center mb-8">
+          <Image
+            src="/images/logo.png"
+            width={120}
+            height={100}
+            alt="Logo"
+            priority
+            className="mx-auto"
+          />
+
+          <h1 className="text-3xl font-bold text-[#212121] mt-4">
+            Crear cuenta
+          </h1>
+
+          <p className="text-sm text-gray-500 mt-2">
+            Completá tus datos para registrarte
+          </p>
+        </div>
+
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+
+          {/* NOMBRE */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Nombre completo
             </label>
             <input
-              type="text"
               id="nombre"
               value={formData.nombre}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Pepito Juarez"
+              placeholder="Juan Pérez"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+                focus:ring-2 focus:ring-[#8a7b5e] focus:outline-none"
               required
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="documento" className="block text-sm font-medium text-gray-700 mb-1">
+
+          {/* DOCUMENTO */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
               Documento
             </label>
             <input
-              type="number"
               id="documento"
+              type="number"
               value={formData.documento}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="12345678"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Correo Electrónico
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="correo@ejemplo.com"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+                focus:ring-2 focus:ring-[#8a7b5e] focus:outline-none"
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          {/* EMAIL */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Correo electrónico
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="correo@ejemplo.com"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+                focus:ring-2 focus:ring-[#8a7b5e] focus:outline-none"
+              required
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
               Contraseña
             </label>
             <input
-              type="password"
               id="password"
+              type="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="********"
+              placeholder="••••••••"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+                focus:ring-2 focus:ring-[#8a7b5e] focus:outline-none"
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="password2" className="block text-sm font-medium text-gray-700 mb-1">
-              Repetir Contraseña
+          {/* PASSWORD 2 */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Repetir contraseña
             </label>
             <input
-              type="password"
               id="password2"
+              type="password"
               value={formData.password2}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="********"
+              placeholder="••••••••"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+                focus:ring-2 focus:ring-[#8a7b5e] focus:outline-none"
               required
             />
           </div>
+
+          {/* SELECT */}
           <div>
-            <label className="text-sm block">Posee usted casa o alquila aquí?</label>
-            <select 
-                defaultValue="NULL" 
-                id="tipoCliente"
-                className="w-full font-light bg-white mt-2 rounded-md h-10 p-2 focus:ring-blue-500 focus:outline-none" 
-                name="tipoCliente"
-                onChange={handleChange}
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Situación habitacional
+            </label>
+
+            <select
+              id="tipoCliente"
+              value={formData.tipoCliente}
+              onChange={handleChange}
+              className="
+                w-full px-4 py-3 rounded-xl border border-gray-300 bg-white
+                focus:ring-2 focus:ring-[#8a7b5e] focus:outline-none
+              "
             >
-                <option value="dueno">Poseo casa aquí</option>
-                <option value="inquilino">Alquilo una casa aquí</option>
-                <option value="NULL">No tengo casa ni alquilo aquí</option>
+              <option value="NULL">No poseo ni alquilo</option>
+              <option value="dueno">Poseo una propiedad</option>
+              <option value="inquilino">Alquilo una propiedad</option>
             </select>
-        </div>
+          </div>
 
-          {errorMessage && <p className="text-red-500 text-sm mb-4">{errorMessage}</p>}
-          {successMessage && <p className="text-green-500 text-sm mb-4">{successMessage}</p>}
+          {/* ERRORS */}
+          {errorMessage && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg">
+              {errorMessage}
+            </div>
+          )}
 
+          {successMessage && (
+            <div className="bg-green-50 border border-green-200 text-green-700 text-sm p-3 rounded-lg">
+              {successMessage}
+            </div>
+          )}
+
+          {/* BUTTON */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none transition"
+            className="
+              w-full py-3 rounded-xl
+              bg-[#8a7b5e] text-white font-semibold
+              hover:bg-[#766851]
+              transition shadow-md
+            "
           >
-            Crear Cuenta
+            Crear cuenta
           </button>
         </form>
 
-        <p className="text-sm text-gray-600 text-center mt-4">
-          ¿Tienes cuenta?{" "}
-          <a href="/logearse" className="text-blue-500 hover:underline">
-            Iniciar Sesión
+        {/* FOOTER */}
+        <p className="text-sm text-gray-500 text-center mt-6">
+          ¿Ya tenés cuenta?{" "}
+          <a
+            href="/logearse"
+            className="text-[#8a7b5e] font-medium hover:underline"
+          >
+            Iniciar sesión
           </a>
         </p>
       </div>
-    </div>
+    </section>
   );
-};
-
-export default RegisterForm;
+}

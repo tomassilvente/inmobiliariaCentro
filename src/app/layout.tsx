@@ -19,13 +19,15 @@ export default function RootLayout({
 }>) {
   return (
     <html className=" text-black " lang="en">
-      <body className={`${oswald.className} antialiased flex flex-col min-h-screen justify-between`}>
+      <body className={`${oswald.className} antialiased flex flex-col min-h-screen`}>
         <NavBar />
-        <div className=" text-black p-5 ">
+
+        <main className="flex-1 container-app py-10">
           {children}
-        </div>
+        </main>
+
         <Footer />
-        </body>
+      </body>
     </html>
   );
 }

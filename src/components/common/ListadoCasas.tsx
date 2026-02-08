@@ -1,4 +1,6 @@
-'use client'
+'use client';
+
+console.log('CLIENT COMPONENT LOADED');
 import { useEffect, useState } from 'react';
 import HorizontalCard from '../../components/common/HorizontalCard';
 import { Casa } from '@/types/casa.interface';
@@ -28,6 +30,7 @@ export default function ListadoCasas({ tipo }: Props) {
                 if (response.ok) {
                     const casas = await response.json();
                     setData(casas);
+                    console.log('DATA:', data);
                 } else {
                     console.error("Error al obtener casas:", response.status);
                 }
@@ -41,17 +44,26 @@ export default function ListadoCasas({ tipo }: Props) {
         getCasas();
     }, []);
 
-    // Filtrar casas basadas en la dirección ingresada y el tipo (alquiler o venta)
-    const filteredData = data.filter(casa => {
+    const filteredData = data.filter((casa) => {
         const matchesDireccion = direccionFilter
-            ? casa.ubicacion.toLowerCase().includes(direccionFilter.toLowerCase())
+            ? casa.ubicacion
+                .toLowerCase()
+                .includes(direccionFilter.toLowerCase())
             : true;
-
+    
         if (tipo === 'alquiler') {
-            return casa.contrato && !casa.inquilino && matchesDireccion;
-        } else {
-            return !casa.contrato && matchesDireccion;
+            return (
+                casa.operacion === 'alquiler' &&
+                casa.contrato_id_activo === null &&
+                matchesDireccion
+            );
         }
+    
+        // venta
+        return (
+            casa.operacion === 'venta' &&
+            matchesDireccion
+        );
     });
 
     const toggleSeleccionCasa = (casa: Casa) => {
@@ -90,18 +102,19 @@ export default function ListadoCasas({ tipo }: Props) {
                 filteredData.map((casa) => (
                     <div className="w-full flex justify-center">
                         <Link key={casa.id} href={`/casa/${casa.id}`} >
-                            <HorizontalCard
-                                image={casa.imagen}
-                                ubicacion={casa.ubicacion}
-                                valor={casa.valor}
-                                dormitorios={casa.dormitorios}
-                                ambientes={casa.ambientes}
-                                banos={casa.banos}
-                                cochera={casa.cochera}
-                                tipo={casa.tipo}
-                                m2={casa.m2}
-                                id={casa.id}
-                                />
+                        <HorizontalCard
+                            image={casa.imagenes?.[0] ?? "/images/no-image.jpg"}
+                            ubicacion={casa.ubicacion}
+                            valor={casa.valor}
+                            dormitorios={casa.dormitorios}
+                            ambientes={casa.ambientes}
+                            banos={casa.banos}
+                            cochera={casa.cochera}
+                            tipo={casa.tipo}
+                            m2={casa.m2}
+                            id={casa.id}
+                            />
+
                         </Link>
                             <button 
                                 className={`border my-5 px-4 rounded ${casasSeleccionadas.some(c => c.id === casa.id) ? 'bg-red-500 text-white' : 'text-black'}`}

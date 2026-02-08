@@ -12,34 +12,55 @@ type CardProps = {
     cochera: boolean
 }
 
-export default function RecommendedCard({ id, image, ubicacion, valor, dormitorios, ambientes, banos, cochera }: CardProps) {
+export default function RecommendedCard({
+    id,
+    image,
+    ubicacion,
+    valor,
+    dormitorios,
+    ambientes,
+    banos,
+    cochera,
+  }: CardProps) {
     return (
-        <Link href={`/casa/${id}`}>
-            <div className="h-[370px] w-[220px] mx-[15px] border border-gray-300 hover:cursor-pointer shadow-md rounded-lg bg-white hover:scale-105 transition-transform duration-300 overflow-hidden">
-                <div className="relative h-[200px] w-full">
-                    <Image 
-                        className="rounded-t-lg object-cover" 
-                        src={image} 
-                        layout="fill" 
-                        alt={ubicacion} 
-                    />
-                </div>
-                <div className="px-4 py-3">
-                    <h1 className="text-lg font-semibold text-gray-800 text-center">{ubicacion}</h1>
-                    <h2 className="text-lg text-center mt-1 text-gray-700 font-medium">{valor}</h2>
-                    <div className="flex justify-center gap-4 mt-3 text-gray-600">
-                        <div className="flex items-center gap-1">
-                            <p className="text-lg">🚽</p>
-                            <p>{banos}</p>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <p className="text-lg">🛏️</p>
-                            <p>{dormitorios}</p>
-                        </div>
-                    
-                    </div>
-                </div>
+      <Link href={`/casa/${id}`}>
+        <article className="
+          w-[300px]
+          bg-white
+          rounded-2xl
+          overflow-hidden
+          shadow-md
+          hover:shadow-xl
+          transition
+          hover:-translate-y-1
+        ">
+          {/* imagen */}
+          <div className="relative h-[200px] w-full">
+            <Image
+              src={image}
+              alt={ubicacion}
+              fill
+              className="object-cover"
+            />
+          </div>
+  
+          {/* contenido */}
+          <div className="p-4">
+            <h3 className="font-semibold text-lg text-gray-800 mb-1">
+              {ubicacion}
+            </h3>
+  
+            <p className="text-[#8a7b5e] font-bold text-xl mb-3">
+              ${valor}
+            </p>
+  
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>🛏 {dormitorios}</span>
+              <span>🚽 {banos}</span>
+              <span>🚗 {cochera ? "Sí" : "No"}</span>
             </div>
-        </Link>
+          </div>
+        </article>
+      </Link>
     );
-}
+  }

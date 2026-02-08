@@ -79,3 +79,68 @@ export async function GET(request: Request, context: any) {
   }
 }
 
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const userId = Number(params.id);
+    const { nombre, documento, email, password } = await request.json();
+
+    if (!nombre || !documento || !email) {
+      return NextResponse.json(
+        { message: "Faltan datos obligatorios" },
+        { status: 400 }
+      );
+    }
+
+    const conn = await connection;
+
+    // 🔍 validar duplicados (EXCLUYENDO este usuario)
+    const [exists]: any = await conn.query(
+      `
+      SELECT id
+      FROM users
+      WHERE (email = ? OR documento = ?)
+        AND id <> ?
+      LIMIT 1
+      `,
+      [email, documento, userId]
+    );
+
+    if (exists.length > 0) {
+      return NextResponse.json(
+        { message: "Ya existe otro cliente con ese email o DNI" },
+        { status: 400 }
+      );
+    }
+
+    // 🧠 armamos update dinámico
+    let query = `
+      UPDATE users
+      SET nombre = ?, documento = ?, email = ?
+    `;
+    const values: any[] = [nombre, documento, email];
+
+    // 🔐 solo si se quiere cambiar password
+    if (password) {
+      const hashed = await bcrypt.hash(password, 10);
+      query += `, password = ?`;
+      values.push(hashed);
+    }
+
+    query += ` WHERE id = ?`;
+    values.push(userId);
+
+    await conn.query(query, values);
+
+    return NextResponse.json({ success: true });
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Error actualizando cliente" },
+      { status: 500 }
+    );
+  }
+}

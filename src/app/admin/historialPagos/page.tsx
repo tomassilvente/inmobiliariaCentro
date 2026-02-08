@@ -1,6 +1,8 @@
 'use client'
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { generarReciboPDF } from "@/utils/generarPdf";
+
 
 const HistorialPagos = () => {
   const [pagos, setPagos] = useState([]);
@@ -29,6 +31,7 @@ const HistorialPagos = () => {
             <th className="border p-2">Fecha</th>
             <th className="border p-2">Estado</th>
             <th className="border p-2">Comprobante</th>
+            <th className="border p-2">Recibo</th>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +42,9 @@ const HistorialPagos = () => {
               </td>
               <td className="border p-2">{pago.ubicacion}</td>
               <td className="border p-2">{pago.monto}</td>
-              <td className="border p-2">{pago.fecha_pago}</td>
+              <td className="border p-2">
+                {new Date(pago.fecha_pago).toLocaleDateString("es-AR")}
+              </td>
               <td className={`border p-2 font-semibold 
                 ${pago.fecha_pago ? 'text-green-600' : 'text-red-600' }`}>
                 {pago.fecha_pago ? 'Pagado' : 'Vencido'}
@@ -51,6 +56,15 @@ const HistorialPagos = () => {
                   </a>
                 ) : 'EFECTIVO'}
               </td>
+              <td className="border p-2">
+                <button
+                  onClick={() => generarReciboPDF(pago)}
+                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                >
+                  Reimprimir
+                </button>
+              </td>
+
             </tr>
           ))}
         </tbody>

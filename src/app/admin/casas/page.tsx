@@ -1,158 +1,155 @@
-'use client'
-import Link from "next/link";
-import { Casa } from "@/types/casa.interface";
+'use client';
+
 import { useEffect, useState } from "react";
 import HorizontalCardAdmin from "./components/HorizontalCardAdmin";
-import { CasaCliente } from "@/types/casacliente.interface";
+import IniciarAlquilerModal from "./components/IniciarAlquilerModal";
 import { User } from "@/types/user.interface";
 
-export default function Casas() {
-    const [casas, setCasas] = useState<Array<Casa>>([]);
-    const [casasClientes, setCasasClientes] = useState<Array<CasaCliente>>([]);
-    const [usuarios, setUsuarios] = useState<Array<User>>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [ubicacionFiltro, setUbicacionFiltro] = useState<string>("");
-    const [ordenarPor, setOrdenarPor] = useState<string>("alfabetico");
 
-    // Cargar Casas
-    const getCasas = async () => {
-        try {
-            const response = await fetch(`http://localhost:3000/api/casas/`);
-            if (response.ok) {
-                const data = await response.json();
-                setCasas(data);
-            }
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+type Casa = {
+  id: number;
+  ubicacion: string;
+  direccion?: string;
+  valor: string;
+  dormitorios: number;
+  ambientes: number;
+  banos: number;
+  cochera: boolean;
+  tipo: string;
+  m2: number;
+  imagen: string;
+  dueno: string | null;
 
-    const getCasasClientes = async () => {
-        try {
-            const response = await fetch(`http://localhost:3000/api/casacliente/`);
-            if (response.ok) {
-                const data = await response.json();
-                setCasasClientes(data);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    
-    const getUsuarios = async () => {
-        try {
-            const response = await fetch(`http://localhost:3000/api/users/`);
-            if (response.ok) {
-                const data = await response.json();
-                setUsuarios(data);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    
+  contrato_id: number | null;
+  inquilino_nombre: string | null;
+};
 
-    useEffect(() => {
-        getCasas();
-        getCasasClientes();
-        getUsuarios();
-    }, []);
+export default function CasasPage() {
+  const [casas, setCasas] = useState<Casa[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const obtenerDueno = (casaId: number) => {
-        if (!casasClientes.length || !usuarios.length) return "Cargando...";
-        const relacion = casasClientes.find((rel) => rel.casa_id === casaId);
-        if (!relacion) return "Sin dueño";
-        const dueno = usuarios.find((user) => user.documento === relacion.user_id);
-        return dueno ? dueno.nombre : "Desconocido";
-    };
-    
-    const obtenerInquilino = (inquilinoId: number | undefined) => {
-        if (!usuarios.length) return "Cargando...";
-        if (!inquilinoId) return "Sin inquilino";
-        const inquilino = usuarios.find((user) => user.documento === inquilinoId);
-        return inquilino ? inquilino.nombre : "Desconocido";
-    };
+  const [modalCasa, setModalCasa] = useState(null);
 
-    // Filtrar por ubicación
-    const casasFiltradas = casas.filter(casa =>
-        casa.ubicacion.toLowerCase().includes(ubicacionFiltro.toLowerCase())
-    );
+  const [ubicacionFiltro, setUbicacionFiltro] = useState("");
+  const [ordenarPor, setOrdenarPor] = useState("alfabetico");
 
-    // Ordenar casas
-    const ordenarCasas = (casas: Array<Casa>) => {
-        if (ordenarPor === "alfabetico") {
-            return casas.sort((a, b) => a.ubicacion.localeCompare(b.ubicacion));
-        } else if (ordenarPor === "inquilino") {
-            return casas.sort((a, b) => {
-                const aTieneInquilino = a.inquilino ? 1 : 0;
-                const bTieneInquilino = b.inquilino ? 1 : 0;
-                return bTieneInquilino - aTieneInquilino;
-            });
-        }
-        return casas;
-    };
+  // 🔄 cargar casas
+  const cargarCasas = async () => {
+    try {
+      const res = await fetch("/api/casas");
+      const data = await res.json();
 
-    return (
-        <div className="py-5 m-5 bg-[#fffce0]">
-            <Link className="ml-5" href={'/admin'}>
-                Volver
-            </Link>
-            <p className="text-4xl text-center font-semibold mb-[30px] text-[#a49271]">INMUEBLES</p>
-            
-           <div className="grid grid-cols-2 items-center text-center">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Filtrar por ubicación"
-                        value={ubicacionFiltro}
-                        onChange={(e) => setUbicacionFiltro(e.target.value)}
-                        className="px-4 py-2 border rounded-lg md:w-[50%]"
-                        />
-                </div>
-                
-                {/* Selector de Orden */}
-                <div className="mb-4">
-                    <select
-                        value={ordenarPor}
-                        onChange={(e) => setOrdenarPor(e.target.value)}
-                        className="px-4 py-2 border rounded-lg"
-                        >
-                        <option value="alfabetico">Orden Alfabético</option>
-                        <option value="inquilino">Primero con Inquilino</option>
-                    </select>
-                </div>
-            </div>
-            
-            {
-                loading
-                    ? <h1 className='m-[150px] text-3xl font-semibold text-white'>Cargando Casas...</h1>
-                    :
-                    <div className="items-center flex flex-col">
-                        {ordenarCasas(casasFiltradas)
-                            .map((casa) => (
-                                <HorizontalCardAdmin
-                                    key={casa.id}
-                                    image={casa.imagen}
-                                    ubicacion={casa.ubicacion}
-                                    valor={casa.valor}
-                                    dormitorios={casa.dormitorios}
-                                    ambientes={casa.ambientes}
-                                    banos={casa.banos}
-                                    cochera={casa.cochera}
-                                    tipo={casa.tipo}
-                                    contrato={casa.contrato}
-                                    inquilino={obtenerInquilino(casa.inquilino)}
-                                    pago={casa.pago}
-                                    m2={casa.m2}
-                                    id={casa.id}
-                                    dueno={obtenerDueno(casa.id)}
-                                    comprobanteUltimo={casa.comprobanteUltimo}
-                                />
-                            ))}
-                    </div>
-            }
+      setCasas(data);
+    } catch (error) {
+      console.error("Error cargando casas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cargarUsuarios = async () => {
+    try {
+      const res = await fetch("/api/users");
+      const data = await res.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error cargando casas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarCasas();
+    cargarUsuarios();
+  }, []);
+
+  // 🔍 filtro
+  const casasFiltradas = casas
+    .filter((c) =>
+      c.ubicacion.toLowerCase().includes(ubicacionFiltro.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (ordenarPor === "inquilino") {
+        return Number(!!b.contrato_id) - Number(!!a.contrato_id);
+      }
+      return a.ubicacion.localeCompare(b.ubicacion);
+    });
+
+  return (
+    <div>
+
+      {/* HEADER */}
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-[#212121]">
+          Inmuebles
+        </h1>
+        <p className="text-gray-500 mt-1">
+          Gestión completa de propiedades
+        </p>
+      </div>
+
+      {/* FILTERS */}
+      <div className="bg-white p-6 rounded-2xl border shadow-sm mb-8 flex flex-col md:flex-row gap-4">
+
+        <input
+          type="text"
+          placeholder="Filtrar por ubicación"
+          value={ubicacionFiltro}
+          onChange={(e) => setUbicacionFiltro(e.target.value)}
+          className="input-admin"
+        />
+
+        <select
+          value={ordenarPor}
+          onChange={(e) => setOrdenarPor(e.target.value)}
+          className="input-admin"
+        >
+          <option value="alfabetico">Orden alfabético</option>
+          <option value="inquilino">Primero alquiladas</option>
+        </select>
+
+      </div>
+
+      {/* LIST */}
+      {loading ? (
+        <p className="text-gray-500">Cargando inmuebles...</p>
+      ) : (
+        <div className="flex flex-col gap-4">
+
+          {casasFiltradas.map((casa) => (
+            <HorizontalCardAdmin
+            key={casa.id}
+            casa={casa}   // ✅ PASAMOS EL OBJETO COMPLETO
+            image={casa.imagen}
+            ubicacion={casa.ubicacion}
+            valor={casa.valor}
+            dormitorios={casa.dormitorios}
+            ambientes={casa.ambientes}
+            banos={casa.banos}
+            cochera={casa.cochera}
+            tipo={casa.tipo}
+            m2={casa.m2}
+            id={casa.id}
+            dueno={casa.dueno ?? "Sin dueño"}
+            setModalCasa={setModalCasa}
+            contratoActivo={casa.contratoActivo}
+
+          />
+          ))}
+
         </div>
-    );
+      )}
+
+        {modalCasa && (
+        <IniciarAlquilerModal
+            casa={modalCasa}
+            usuarios={users}
+            onClose={() => setModalCasa(null)}
+            onSuccess={cargarCasas}
+        />
+        )}
+    </div>
+  );
 }

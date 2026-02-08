@@ -1,218 +1,199 @@
-'use client'
-import axios from "axios"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import Link from "next/link"
+'use client';
 
-export type FormData = {
-    imagen: any,
-    ubicacion: string,
-    valor: string,
-    dormitorios: number,
-    ambientes: number,
-    contrato?: string | null,
-    tipo:string,
-    m2:number,
-    banos: number,
-    cochera: number
-}
+import { useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 
-export default function CrearCasa(){
-    
-    const [formData, setFormData] = useState<FormData>({
-        imagen: '',
-        ubicacion: '',
-        valor: '',
-        dormitorios: 0,
-        ambientes: 0,
-        contrato: null,
-        tipo:'', 
-        m2:0,
-        banos: 0,
-        cochera: 0
-      })
+export default function CrearCasa() {
+  const router = useRouter();
 
-      const [errors, setErrors] = useState<Record<string, string>>({})
-      const [file, setFile] = useState<any>(null)
+  const [imagenes, setImagenes] = useState<File[]>([]);
 
-      let errores = 'Falta'
-      const router = useRouter()
+  const [formData, setFormData] = useState({
+    ubicacion: '',
+    valor: '',
+    tipo: 'casa',
+    operacion: 'venta',
+    ambientes: 1,
+    dormitorios: 1,
+    banos: 1,
+    cochera: 0,
+    m2: 30,
+    contrato: '',
+  });
 
-      const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
-        const { name, value } = e.target
-        setFormData((prev) => ({ ...prev, [name]: value }))
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData(prev => ({
+      ...prev,
+      [name]:
+        e.target.type === 'number'
+          ? Number(value)
+          : value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!imagenes.length) {
+      alert('Debe subir al menos una imagen');
+      return;
+    }
+
+    const data = new FormData();
+
+    Object.entries(formData).forEach(([k, v]) => {
+      if (k !== "imagenes") {
+        data.append(k, String(v));
       }
+    });
 
-      const validateFormData = (): boolean => {
+    imagenes.forEach(img => {
+      data.append("imagenes", img);
+    });
 
-        let valid = true
-        const errs: Record<string, string> = {}
-        if(file !== null){
-            formData.imagen = file[0]
-        }
-        else errs.imagen = 'Al menos 1 imagen Requerida'
-        if (!formData.ubicacion) {errs.ubicacion = 'Ubicación Requerida'; errores = errores + ' Ubicación'}
-        if (!formData.valor) {errs.valor = 'Valor Requerido'; errores = errores + ' Valor'}
-        if (!formData.tipo) {errs.tipo = 'Tipo Requerido'; errores = errores + ' Tipo'}
-        if (formData.m2 < 1) {errs.m2 = 'm2 Requerido'; errores = errores + ' M2'}
-        if (formData.banos < 1) {errs.banos = 'Al menos 1 baño Requerida'; errores = errores + ' Baños'}
-    
-        if (Object.keys(errs).length > 0) valid = false
-        setErrors(errs)
-        
-        console.log(errores)
-        return valid
-      }
 
-      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-        e.preventDefault()
-        
-        errores = 'Falta'
-        if (!validateFormData()) {
-            console.log(errors)
-            alert(errores)
-            return
-        }
+    await axios.post('/api/casas', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
-        console.log(formData)
-        const res = await axios.post("/api/casas", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-        console.log(res)
-        if(res) router.push('/admin')
-      }
-    return(
-        <div className="mx-auto max-w-screen-lg px-4  bg-black bg-opacity-20 rounded-xl pb-8 pt-6 my-8 shadow-lg">
-            <Link className="ml-5" href={'/admin'}>
-                Volver
-            </Link>
-    <h1 className="text-center text-3xl font-semibold text-gray-500 mb-6">{formData.ubicacion || "Crear Propiedad"}</h1>
-    <form 
-        onSubmit={handleSubmit} 
-        className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-6 rounded-lg"
-    >
-        <div>
-            <label className="text-sm block">Ubicación</label>
-            <input 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                onChange={handleChange}
-                name="ubicacion" 
-                type="text" 
+    router.push('/admin');
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-10">
+
+      <Link href="/admin" className="text-sm text-blue-500">
+        ← Volver
+      </Link>
+
+      <h1 className="text-3xl font-semibold mb-8">
+        Crear nueva propiedad
+      </h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-2xl shadow-xl p-8 grid gap-10"
+      >
+
+        {/* DATOS GENERALES */}
+        <section>
+          <h2 className="text-xl font-medium mb-4">Datos generales</h2>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <input
+              name="ubicacion"
+              placeholder="Ubicación"
+              className="input"
+              onChange={handleChange}
             />
-        </div>
-        
-        <div>
-            <label className="text-sm block">Valor</label>
-            <input 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="valor" 
-                type="text" 
-                onChange={handleChange}
-            />
-        </div>
 
-        <div>
-            <label className="text-sm block">Tipo de Inmueble</label>
-            <select 
-                defaultValue="casa" 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="tipo"
-                onChange={handleChange}
-            >
-                <option value="casa">Casa</option>
-                <option value="departamento">Departamento</option>
-                <option value="local">Local</option>
+            <select name="tipo" className="input" onChange={handleChange}>
+              <option value="casa">Casa</option>
+              <option value="departamento">Departamento</option>
+              <option value="local">Local</option>
             </select>
-        </div>
 
-        <div>
-            <label className="text-sm block">Ambientes</label>
-            <input 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="ambientes" 
-                type="number"
-                defaultValue={1}
-                onChange={handleChange}
-            />
-        </div>
-
-        <div>
-            <label className="text-sm block">Dormitorios</label>
-            <input 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="dormitorios" 
-                type="number" 
-                defaultValue={1}
-                onChange={handleChange}
-            />
-        </div>
-
-        <div>
-            <label className="text-sm block">Baños</label>
-            <input 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="banos" 
-                type="number" 
-                defaultValue={1}
-                onChange={handleChange}
-            />
-        </div>
-
-        <div>
-            <label className="text-sm block">Cochera</label>
-            <select 
-                defaultValue={0}
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="tipo"
-                onChange={handleChange}
+            <select
+              name="operacion"
+              className="input"
+              onChange={handleChange}
             >
-                <option value={1}>Sí</option>
-                <option value={0}>No</option>
+              <option value="venta">Venta</option>
+              <option value="alquiler">Alquiler</option>
             </select>
-        </div>
+          </div>
+        </section>
 
-        <div>
-            <label className="text-sm block">Metros Cuadrados</label>
-            <input 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="m2" 
-                type="number" 
-                defaultValue={30}
-                onChange={handleChange}
-            />
-        </div>
+        {/* CARACTERÍSTICAS */}
+        <section>
+          <h2 className="text-xl font-medium mb-4">Características</h2>
 
-        <div>
-            <label className="text-sm block">Fecha de Contrato (si hay)</label>
-            <input 
-                className="w-full font-light bg-gray-200 mt-2 rounded-md h-10 p-2" 
-                name="contrato" 
-                type="text" 
-                placeholder="dd/mm/aaaa"
-                onChange={handleChange}
-            />
-        </div>
-        <div>
-            <label className="text-sm block">Insertar Imágenes</label>
-            <input 
-                className="w-full font-light mt-2 rounded-md h-10" 
-                multiple 
-                type="file" 
-                accept=".png, .jpg, .jpeg"
-                onChange={e => setFile(e.target.files)}
-            />
-        </div>
+          <div className="grid md:grid-cols-5 gap-4">
+            <input type="number" name="ambientes" className="input" placeholder="Ambientes" onChange={handleChange} />
+            <input type="number" name="dormitorios" className="input" placeholder="Dormitorios" onChange={handleChange} />
+            <input type="number" name="banos" className="input" placeholder="Baños" onChange={handleChange} />
+            <input type="number" name="m2" className="input" placeholder="m²" onChange={handleChange} />
 
-        <button 
-            type="submit" 
-            className="col-span-full bg-green-500 h-12 rounded-xl text-white text-xl mt-4 w-full sm:w-1/2 mx-auto"
+            <select name="cochera" className="input" onChange={handleChange}>
+              <option value={0}>Sin cochera</option>
+              <option value={1}>Con cochera</option>
+            </select>
+          </div>
+        </section>
+
+        {/* VALOR */}
+        <section>
+          <h2 className="text-xl font-medium mb-4">Valor</h2>
+
+          <input
+            name="valor"
+            placeholder="Valor del inmueble"
+            className="input max-w-sm"
+            onChange={handleChange}
+          />
+        </section>
+
+        {/* CONTRATO */}
+        <section>
+          <h2 className="text-xl font-medium mb-4">Contrato</h2>
+
+          <input
+            name="contrato"
+            placeholder="dd/mm/aaaa"
+            className="input max-w-sm"
+            onChange={handleChange}
+          />
+        </section>
+
+        {/* IMÁGENES */}
+        <section>
+          <h2 className="text-xl font-medium mb-4">Imágenes</h2>
+
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={e =>
+              setImagenes(Array.from(e.target.files || []))
+            }
+          />
+
+          {/* PREVIEW */}
+          {imagenes.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
+              {imagenes.map((img, i) => (
+                <div
+                  key={i}
+                  className="relative w-full h-32 rounded-lg overflow-hidden border"
+                >
+                  <Image
+                    src={URL.createObjectURL(img)}
+                    alt=""
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <button
+          type="submit"
+          className="bg-green-600 hover:bg-green-700 text-white py-3 px-8 rounded-xl text-lg self-start"
         >
-            Enviar
+          Guardar propiedad
         </button>
-    </form>
-</div>
-
-    )
+      </form>
+    </div>
+  );
 }
