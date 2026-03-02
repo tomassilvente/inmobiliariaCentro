@@ -5,45 +5,67 @@ import jwt from "jsonwebtoken";
 
 const SECRET_KEY = "mi_clave_secreta"; // Utiliza variables de entorno en producción
 
-export async function POST(request: any) {
+export async function POST(request: Request) {
   try {
     const data = await request.json();
-    console.log(data)
 
-    // Buscar al usuario por email
-    const [rows] = await (await connection).query("SELECT * FROM users WHERE email = ?", [data.email]);
+    const [rows]: any = await (await connection).query(
+      `
+      SELECT id, documento, nombre, email, password
+      FROM users
+      WHERE email = ?
+      `,
+      [data.email]
+    );
 
     if (rows.length === 0) {
-      return NextResponse.json({ message: "Usuario no encontrado" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Usuario no encontrado" },
+        { status: 404 }
+      );
     }
 
     const user = rows[0];
 
-    // Comparar contraseñas
-    const isPasswordValid = await bcrypt.compare(data.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      data.password,
+      user.password
+    );
+
     if (!isPasswordValid) {
-      return NextResponse.json({ message: "Contraseña incorrecta" }, { status: 401 });
+      return NextResponse.json(
+        { message: "Contraseña incorrecta" },
+        { status: 401 }
+      );
     }
 
-    // Generar token JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email, nombre: user.nombre }, // Información dentro del token
-      SECRET_KEY,
-      { expiresIn: "1h" } // Tiempo de expiración del token
+      {
+        documento: user.documento, // 👈 FUNDAMENTAL
+        email: user.email,
+        nombre: user.nombre,
+      },
+      process.env.SECRET_KEY!, // 👈 importante
+      { expiresIn: "1h" }
     );
 
     return NextResponse.json({
       message: "Inicio de sesión exitoso",
       token,
-      user
+      user: {
+        nombre: user.nombre,
+        email: user.email,
+        documento: user.documento,
+      },
     });
   } catch (error: any) {
     return NextResponse.json(
-      { message: error.message },
+      { message: "Error interno del servidor" },
       { status: 500 }
     );
   }
 }
+
 
 export async function DELETE(request: Request, context:any){
   const {params} = context

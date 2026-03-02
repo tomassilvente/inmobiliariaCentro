@@ -16,7 +16,7 @@ export default function LoginForm() {
     setErrorMessage("");
 
     try {
-      const response = await fetch(`/api/users/${email}`, {
+      const response = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -30,7 +30,6 @@ export default function LoginForm() {
       }
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("nombre", data.user.nombre);
       router.push("/");
     } catch {
       setErrorMessage("Ocurrió un error. Intentalo nuevamente.");

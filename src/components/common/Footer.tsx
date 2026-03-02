@@ -4,6 +4,9 @@ import SvgFB from "../../../public/assets/fb";
 import SvgX from "../../../public/assets/X";
 import SvgInstagram from "../../../public/assets/Instagram";
 import SvgThreads from "../../../public/assets/Threads";
+import SvgLocation from "../../../public/assets/location";
+import SvgPhone from "../../../public/assets/phone";
+import SvgEmail from "../../../public/assets/email";
 
 export default function Footer(){
 
@@ -38,9 +41,9 @@ export default function Footer(){
             Contacto
           </h4>
           <ul className="space-y-2 text-sm text-gray-400">
-            <li>📍 25 de Mayo 482, Punta Alta</li>
-            <li>📞 02932 43-4360</li>
-            <li>✉ inmobiliaria.centro@yahoo.com.ar</li>
+            <li className="flex gap-2"> <SvgLocation /> 25 de Mayo 482, Punta Alta</li>
+            <li className="flex gap-2"> <SvgPhone /> 02932 43-4360</li>
+            <li className="flex gap-2"> <SvgEmail />inmobiliaria.centro@yahoo.com.ar</li>
           </ul>
         </div>
     

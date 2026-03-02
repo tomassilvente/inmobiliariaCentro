@@ -13,7 +13,6 @@ export default function RegisterForm() {
     email: "",
     password: "",
     password2: "",
-    tipoCliente: "NULL",
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -170,27 +169,6 @@ export default function RegisterForm() {
                 focus:ring-2 focus:ring-[#8a7b5e] focus:outline-none"
               required
             />
-          </div>
-
-          {/* SELECT */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Situación habitacional
-            </label>
-
-            <select
-              id="tipoCliente"
-              value={formData.tipoCliente}
-              onChange={handleChange}
-              className="
-                w-full px-4 py-3 rounded-xl border border-gray-300 bg-white
-                focus:ring-2 focus:ring-[#8a7b5e] focus:outline-none
-              "
-            >
-              <option value="NULL">No poseo ni alquilo</option>
-              <option value="dueno">Poseo una propiedad</option>
-              <option value="inquilino">Alquilo una propiedad</option>
-            </select>
           </div>
 
           {/* ERRORS */}

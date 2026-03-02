@@ -98,8 +98,7 @@ export default function ClientesAdmin() {
                   </p>
                 </div>
 
-                <Link
-                  href={`/admin/clientes/${user.id}`}
+                <Link href={`/admin/clientes/${user.documento}`}
                   className="text-sm text-[#8a7b5e] hover:underline"
                 >
                   Editar

@@ -21,7 +21,6 @@ export default function CrearCasa() {
     banos: 1,
     cochera: 0,
     m2: 30,
-    contrato: '',
   });
 
   const handleChange = (
@@ -137,18 +136,6 @@ export default function CrearCasa() {
           <input
             name="valor"
             placeholder="Valor del inmueble"
-            className="input max-w-sm"
-            onChange={handleChange}
-          />
-        </section>
-
-        {/* CONTRATO */}
-        <section>
-          <h2 className="text-xl font-medium mb-4">Contrato</h2>
-
-          <input
-            name="contrato"
-            placeholder="dd/mm/aaaa"
             className="input max-w-sm"
             onChange={handleChange}
           />

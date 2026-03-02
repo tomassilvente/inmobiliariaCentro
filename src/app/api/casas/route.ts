@@ -18,6 +18,7 @@ export async function GET(request: Request) {
 
     const operacion = searchParams.get("operacion");
     const exclude = searchParams.get("exclude");
+    const disponible = searchParams.get("disponible");
 
     let where = "WHERE 1 = 1";
     const params: any[] = [];
@@ -25,6 +26,10 @@ export async function GET(request: Request) {
     if (operacion) {
       where += " AND ca.operacion = ?";
       params.push(operacion);
+    }
+
+    if (disponible === "true") {
+      where += " AND c.id IS NULL";
     }
 
     if (exclude) {
@@ -37,6 +42,7 @@ export async function GET(request: Request) {
       SELECT
         ca.id,
         ca.ubicacion,
+        ca.banos,
         ca.valor,
         ca.ambientes,
         ca.dormitorios,
@@ -104,7 +110,7 @@ export async function GET(request: Request) {
      * - Si viene con filtros → frontend (recomendadas)
      * - Si NO → admin / listados
      */
-    if (operacion || exclude) {
+    if (operacion || exclude || disponible) {
       return NextResponse.json({ casas });
     }
 
@@ -145,8 +151,8 @@ export async function POST(request: Request) {
     const [result]: any = await (await connection).query(
       `
       INSERT INTO casas
-      (ubicacion, valor, dormitorios, ambientes, banos, cochera, tipo, m2, contrato)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (ubicacion, valor, dormitorios, ambientes, banos, cochera, tipo, m2)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         ubicacion,
@@ -156,8 +162,7 @@ export async function POST(request: Request) {
         banos,
         cochera,
         tipo,
-        m2,
-        contrato,
+        m2
       ]
     );
 

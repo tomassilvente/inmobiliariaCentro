@@ -33,10 +33,10 @@ export async function GET() {
 }
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const { nombre, documento, email, password } = data;
+    const { nombre, documento, email, password } =
+      await request.json();
 
-    if (!nombre || !documento || !email) {
+    if (!nombre || !documento || !email || !password) {
       return NextResponse.json(
         { message: "Faltan datos obligatorios" },
         { status: 400 }
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
     const conn = await connection;
 
-    // 🔍 validar duplicados (EMAIL o DNI)
+    // 🔍 validar duplicados
     const [exists]: any = await conn.query(
       `
       SELECT id
@@ -58,19 +58,16 @@ export async function POST(request: Request) {
 
     if (exists.length > 0) {
       return NextResponse.json(
-        { message: "Ya existe un cliente con ese email o DNI" },
+        { message: "Ya existe un usuario con ese email o documento" },
         { status: 400 }
       );
     }
 
-    let hashedPassword = null;
+    // 🔐 hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 🔐 solo si viene password
-    if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
-    }
-
-    const [result]: any = await conn.query(
+    // 🧾 crear usuario
+    await conn.query(
       `
       INSERT INTO users (nombre, documento, email, password)
       VALUES (?, ?, ?, ?)
@@ -78,32 +75,24 @@ export async function POST(request: Request) {
       [nombre, documento, email, hashedPassword]
     );
 
-    // 👉 si NO hay password (admin), no generamos token
-    if (!password) {
-      return NextResponse.json({
-        success: true,
-        id: result.insertId,
-      });
-    }
-
-    // 👉 si hay password (registro/login), generamos token
+    // 🔑 generar JWT (CLAVE)
     const token = jwt.sign(
       {
-        id: result.insertId,
+        documento,
         email,
         nombre,
       },
-      SECRET_KEY,
+      process.env.SECRET_KEY!,
       { expiresIn: "1h" }
     );
 
     return NextResponse.json({
-      message: "Usuario registrado con éxito",
+      message: "Usuario registrado correctamente",
       token,
+      user: { nombre, documento, email },
     });
-
-  } catch (error: any) {
-    console.error(error);
+  } catch (error) {
+    console.error("REGISTER ERROR:", error);
     return NextResponse.json(
       { message: "Error interno del servidor" },
       { status: 500 }

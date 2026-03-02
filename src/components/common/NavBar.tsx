@@ -5,31 +5,47 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function NavBar() {
+type AuthUser = {
+  nombre: string;
+  email: string;
+  documento: string;
+};
 
+export default function NavBar() {
   const [menuVisible, setMenuVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [nombre, setNombre] = useState<string | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    setNombre(localStorage.getItem("nombre"));
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setUser({
+        nombre: payload.nombre,
+        email: payload.email,
+        documento: payload.documento,
+      });
+    } catch {
+      setUser(null);
+    }
   }, []);
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
     router.push("/logearse");
   };
 
   return (
     <nav className="bg-[#0f172a] text-white border-b border-white/10">
-
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
 
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3 py-2">
           <Image
-          className="pt-2"
+            className="pt-2"
             src="/images/logoblanco.png"
             alt="Inmobiliaria Centro"
             width={110}
@@ -40,39 +56,34 @@ export default function NavBar() {
 
         {/* LINKS DESKTOP */}
         <div className="hidden md:flex gap-8 font-medium">
-
           {[
             { href: "/", label: "Home" },
             { href: "/alquileres", label: "Alquileres" },
             { href: "/venta", label: "Ventas" },
             { href: "/about", label: "Nosotros" },
           ].map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="relative group"
-            >
+            <Link key={link.href} href={link.href} className="relative group">
               {link.label}
-              <span className="
-                absolute left-0 -bottom-1 h-[2px] w-0
-                bg-[#c6b07e]
-                transition-all group-hover:w-full
-              "/>
+              <span
+                className="
+                  absolute left-0 -bottom-1 h-[2px] w-0
+                  bg-[#c6b07e]
+                  transition-all group-hover:w-full
+                "
+              />
             </Link>
           ))}
-
         </div>
 
         {/* USER */}
         <div className="flex items-center gap-4">
-
-          {nombre ? (
+          {user ? (
             <div className="relative">
               <button
                 onClick={() => setMenuVisible(!menuVisible)}
                 className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"
               >
-                {nombre}
+                {user.nombre}
               </button>
 
               {menuVisible && (
@@ -108,7 +119,6 @@ export default function NavBar() {
           >
             ☰
           </button>
-
         </div>
       </div>
 

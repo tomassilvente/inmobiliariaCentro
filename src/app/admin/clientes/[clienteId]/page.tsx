@@ -4,10 +4,31 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
+/* =======================
+   Helpers
+======================= */
+const getParamValue = (value: any): string | null => {
+  if (!value) return null;
+  return Array.isArray(value) ? value[0] : value;
+};
+
+type Casa = {
+  id: number;
+  ubicacion: string;
+  duenio: string | null;
+};
+
 export default function EditarClientePage() {
   const router = useRouter();
   const params = useParams();
-  const id = params.id;
+
+  const clienteId = getParamValue((params as any)?.clienteId);
+
+  /* =======================
+     States
+  ======================= */
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     nombre: "",
@@ -16,23 +37,63 @@ export default function EditarClientePage() {
     password: "",
   });
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [casas, setCasas] = useState<Casa[]>([]);
+  const [loadingCasas, setLoadingCasas] = useState(true);
 
+  /* =======================
+     Fetch cliente
+  ======================= */
   useEffect(() => {
-    fetch(`/api/users/${id}`)
+    if (!clienteId) return;
+
+    setLoading(true);
+
+    fetch(`/api/users/${clienteId}`)
       .then(r => r.json())
       .then(data => {
+        const u = data.user ?? data;
+
         setForm({
-          nombre: data.nombre,
-          documento: data.documento,
-          email: data.email,
+          nombre: u.nombre || "",
+          documento: u.documento || "",
+          email: u.email || "",
           password: "",
         });
       })
+      .catch(() => setError("No se pudo cargar el cliente"))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [clienteId]);
 
+  /* =======================
+     Fetch casas (dueño)
+  ======================= */
+  const fetchCasas = () => {
+    if (!form.documento) return;
+
+    setLoadingCasas(true);
+
+    fetch(`/api/users/${form.documento}/properties`)
+      .then(r => r.json())
+      .then(r => {
+        console.log(r)
+        if (Array.isArray(r)) {
+          setCasas(r);
+        } else {
+          console.error("Respuesta inválida de properties:", r);
+          setCasas([]);
+        }
+      })
+      
+      .finally(() => setLoadingCasas(false));
+  };
+
+  useEffect(() => {
+    fetchCasas();
+  }, [form.documento]);
+
+  /* =======================
+     Handlers
+  ======================= */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -41,7 +102,12 @@ export default function EditarClientePage() {
     e.preventDefault();
     setError(null);
 
-    const res = await fetch(`/api/users/${id}`, {
+    if (!clienteId) {
+      setError("ID de cliente inválido");
+      return;
+    }
+
+    const res = await fetch(`/api/users/${clienteId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
@@ -57,20 +123,54 @@ export default function EditarClientePage() {
     router.push("/admin/clientes");
   };
 
+  const vincularCasa = async (casaId: number) => {
+    await fetch(`/api/users/${form.documento}/properties`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ casaId }),
+    });
+
+    fetchCasas();
+  };
+
+  const desvincularCasa = async (casaId: number) => {
+    await fetch(`/api/users/${form.documento}/properties`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ casaId }),
+    });
+
+    fetchCasas();
+  };
+
+  /* =======================
+     Guards
+  ======================= */
+  if (!clienteId) {
+    return (
+      <p className="text-red-600 text-center">
+        Ruta inválida: no se encontró el ID del cliente.
+      </p>
+    );
+  }
+
   if (loading) {
     return <p className="text-gray-500">Cargando cliente…</p>;
   }
 
+  /* =======================
+     Render
+  ======================= */
   return (
-    <div className="max-w-xl mx-auto">
+    <div className="max-w-xl mx-auto space-y-10">
 
-      <div className="mb-8">
+      {/* HEADER */}
+      <div>
         <h1 className="text-3xl font-bold">Editar cliente</h1>
-        <p className="text-gray-500">
-          Modificar datos del cliente
-        </p>
+        <p className="text-gray-500">Modificar datos del cliente</p>
       </div>
 
+      {/* FORM */}
       <form
         onSubmit={handleSubmit}
         className="bg-white border rounded-2xl p-6 shadow-sm space-y-4"
@@ -88,7 +188,7 @@ export default function EditarClientePage() {
           value={form.documento}
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded"
-          placeholder="DNI"
+          placeholder="Documento"
         />
 
         <input
@@ -123,6 +223,62 @@ export default function EditarClientePage() {
           </button>
         </div>
       </form>
+
+      {/* PROPIEDADES COMO DUEÑO */}
+      <div>
+        <h2 className="text-xl font-semibold mb-2">
+          Propiedades como dueño
+        </h2>
+
+        {loadingCasas && (
+          <p className="text-gray-500 text-sm">Cargando propiedades…</p>
+        )}
+
+        {!loadingCasas && casas.length === 0 && (
+          <p className="text-gray-500 text-sm">
+            No hay propiedades disponibles
+          </p>
+        )}
+
+        <ul className="space-y-3">
+          {casas.map(casa => {
+            const esDuenio = casa.duenio === form.documento;
+
+            return (
+              <li
+                key={casa.id}
+                className="border rounded-xl p-4 flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium">{casa.ubicacion}</p>
+                  <p className="text-sm text-gray-500">
+                    {esDuenio ? "Ya es dueño" : "Sin dueño"}
+                  </p>
+                </div>
+
+                {esDuenio ? (
+                  <button
+                    onClick={() => desvincularCasa(casa.id)}
+                    className="px-4 py-2 text-sm rounded-lg
+                               bg-red-100 text-red-600 hover:bg-red-200"
+                  >
+                    Desvincular
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => vincularCasa(casa.id)}
+                    className="px-4 py-2 text-sm rounded-lg
+                               bg-green-600 text-white hover:bg-green-700"
+                  >
+                    Vincular como dueño
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
     </div>
   );
 }

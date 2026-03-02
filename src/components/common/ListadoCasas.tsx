@@ -22,9 +22,8 @@ export default function ListadoCasas({ tipo }: Props) {
     useEffect(() => {
         const getCasas = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/casas/`, {
-                    method: 'GET',
-                    next: { revalidate: 5000 }
+                const response = await fetch(`/api/casas/`, {
+                    method: 'GET'
                 });
 
                 if (response.ok) {

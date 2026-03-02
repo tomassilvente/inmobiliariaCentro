@@ -1,5 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import SvgSofa from "../../../public/assets/sofa";
+import SvgBed from "../../../public/assets/bed";
+import SvgBath from "../../../public/assets/bath";
 
 type CardProps = {
     id: number,
@@ -23,9 +26,10 @@ export default function RecommendedCard({
     cochera,
   }: CardProps) {
     return (
-      <Link href={`/casa/${id}`}>
-        <article className="
-          w-[300px]
+      <Link  
+        className="
+          w-[100%]
+          max-w-[375px]
           bg-white
           rounded-2xl
           overflow-hidden
@@ -33,7 +37,9 @@ export default function RecommendedCard({
           hover:shadow-xl
           transition
           hover:-translate-y-1
-        ">
+        " 
+        href={`/casa/${id}`}>
+        <article>
           {/* imagen */}
           <div className="relative h-[200px] w-full">
             <Image
@@ -55,9 +61,9 @@ export default function RecommendedCard({
             </p>
   
             <div className="flex justify-between text-sm text-gray-600">
-              <span>🛏 {dormitorios}</span>
-              <span>🚽 {banos}</span>
-              <span>🚗 {cochera ? "Sí" : "No"}</span>
+              <li className="flex items-center gap-2"> <SvgSofa  width={35} height={35}/> {ambientes} ambientes</li>
+              <li className="flex items-center gap-2"> <SvgBed  width={35} height={35}/> {dormitorios} dormitorios</li>
+              <li className="flex items-center gap-2"> <SvgBath  width={35} height={35}/> {banos} baños</li>
             </div>
           </div>
         </article>
