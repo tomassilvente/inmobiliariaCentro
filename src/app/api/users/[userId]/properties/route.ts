@@ -8,22 +8,40 @@ import { connection } from "@/libs/db";
 ====================================================== */
 export async function GET(
   _: Request,
-  { params }: { params: { documento: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const documento = params.documento;
+  const documento = params.userId;
   const conn = await connection;
 
-  const [rows]: any = await conn.query(`
+  /* 1️⃣ Buscar id del usuario */
+  const [users]: any = await conn.query(
+    `SELECT id FROM users WHERE documento = ? LIMIT 1`,
+    [documento]
+  );
+
+  if (users.length === 0) {
+    return NextResponse.json([]);
+  }
+
+  const userId = users[0].id;
+
+  /* 2️⃣ Traer casas */
+  const [rows]: any = await conn.query(
+    `
     SELECT
       c.id,
       c.ubicacion,
       cc.user_id AS duenio
     FROM casas c
     LEFT JOIN casacliente cc ON cc.casa_id = c.id
-  `);
+    WHERE cc.user_id IS NULL OR cc.user_id = ?
+    `,
+    [userId]
+  );
 
+  /* 3️⃣ Filtrar */
   const casas = rows.filter((casa: any) =>
-    !casa.duenio || casa.duenio === documento
+    !casa.duenio || casa.duenio === userId
   );
 
   return NextResponse.json(casas);
@@ -32,9 +50,9 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { documento: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const documento = params.documento;
+  const documento = params.userId;
   const { casaId } = await request.json();
   const conn = await connection;
 
@@ -78,15 +96,29 @@ export async function POST(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { documento: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const documento = params.documento;
+  const documento = params.userId;
   const { casaId } = await request.json();
   const conn = await connection;
 
+  const [users]: any = await conn.query(
+    `SELECT id FROM users WHERE documento = ? LIMIT 1`,
+    [documento]
+  );
+  
+  if (users.length === 0) {
+    return NextResponse.json(
+      { message: "Usuario no encontrado" },
+      { status: 404 }
+    );
+  }
+  
+  const userId = users[0].id;
+  
   await conn.query(
     `DELETE FROM casacliente WHERE user_id = ? AND casa_id = ?`,
-    [documento, casaId]
+    [userId, casaId]
   );
 
   return NextResponse.json({ success: true });
