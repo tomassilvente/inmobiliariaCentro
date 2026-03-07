@@ -34,6 +34,8 @@ export default function CasasPage() {
   const [ubicacionFiltro, setUbicacionFiltro] = useState("");
   const [ordenarPor, setOrdenarPor] = useState("alfabetico");
 
+  const [estadoFiltro, setEstadoFiltro] = useState("todas");
+
   // 🔄 cargar casas
   const cargarCasas = async () => {
     try {
@@ -65,17 +67,37 @@ export default function CasasPage() {
     cargarUsuarios();
   }, []);
 
-  // 🔍 filtro
+
   const casasFiltradas = casas
-    .filter((c) =>
-      c.ubicacion.toLowerCase().includes(ubicacionFiltro.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (ordenarPor === "inquilino") {
-        return Number(!!b.contrato_id) - Number(!!a.contrato_id);
-      }
-      return a.ubicacion.localeCompare(b.ubicacion);
-    });
+  .filter((c) =>
+    c.ubicacion.toLowerCase().includes(ubicacionFiltro.toLowerCase())
+  )
+  .filter((c) => {
+    const operacion = (c.operacion || "").toLowerCase();
+
+    console.log(casas);
+
+    if (estadoFiltro === "venta") {
+      return operacion.includes("venta");
+    }
+
+    if (estadoFiltro === "alquiler") {
+      return operacion.includes("alquiler") && !c.contrato_id;
+    }
+
+    if (estadoFiltro === "alquiladas") {
+      return operacion.includes("alquiler") && !!c.contrato_id;
+    }
+
+    return true;
+  })
+  .sort((a, b) => {
+    if (ordenarPor === "inquilino") {
+      return Number(!!b.contrato_id) - Number(!!a.contrato_id);
+    }
+
+    return a.ubicacion.localeCompare(b.ubicacion);
+  });
 
   return (
     <div>
@@ -110,6 +132,16 @@ export default function CasasPage() {
           <option value="inquilino">Primero alquiladas</option>
         </select>
 
+        <select
+          value={estadoFiltro}
+          onChange={(e) => setEstadoFiltro(e.target.value)}
+          className="input-admin"
+        >
+          <option value="todas">Todas</option>
+          <option value="venta">En venta</option>
+          <option value="alquiler">En alquiler</option>
+          <option value="alquiladas">Alquiladas</option>
+        </select>
       </div>
 
       {/* LIST */}
@@ -121,21 +153,8 @@ export default function CasasPage() {
           {casasFiltradas.map((casa) => (
             <HorizontalCardAdmin
             key={casa.id}
-            casa={casa}   // ✅ PASAMOS EL OBJETO COMPLETO
-            image={casa.imagen}
-            ubicacion={casa.ubicacion}
-            valor={casa.valor}
-            dormitorios={casa.dormitorios}
-            ambientes={casa.ambientes}
-            banos={casa.banos}
-            cochera={casa.cochera}
-            tipo={casa.tipo}
-            m2={casa.m2}
-            id={casa.id}
-            dueno={casa.dueno ?? "Sin dueño"}
+            casa={casa}
             setModalCasa={setModalCasa}
-            contratoActivo={casa.contratoActivo}
-
           />
           ))}
 

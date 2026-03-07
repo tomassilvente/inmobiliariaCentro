@@ -85,7 +85,6 @@ export async function GET(request: Request) {
         c.id
 
       ORDER BY ca.id DESC
-      LIMIT 4
       `,
       params
     );

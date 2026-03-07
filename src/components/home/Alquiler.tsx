@@ -16,7 +16,7 @@ export default async function Alquiler() {
   const data = await getCasas();
 
   const casasFiltradas = data
-    .filter((c) => c.operacion === "alquiler" && c.contrato_id_activo === null)
+    .filter((c) => c.operacion === "alquiler" && !c.contrato_id)
     .sort((a, b) => b.id - a.id)
     .slice(0, 3);
 

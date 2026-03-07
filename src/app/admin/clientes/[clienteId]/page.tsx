@@ -38,6 +38,15 @@ export default function EditarClientePage() {
   });
 
   const [casas, setCasas] = useState<Casa[]>([]);
+
+  const casasDelCliente = casas.filter(
+    c => c.duenio === form.documento
+  );
+  
+  const casasDisponibles = casas.filter(
+    c => !c.duenio
+  );
+
   const [loadingCasas, setLoadingCasas] = useState(true);
 
   /* =======================
@@ -224,59 +233,71 @@ export default function EditarClientePage() {
         </div>
       </form>
 
-      {/* PROPIEDADES COMO DUEÑO */}
-      <div>
-        <h2 className="text-xl font-semibold mb-2">
-          Propiedades como dueño
-        </h2>
+      <div className="space-y-8">
+        <div>
+          <h2 className="text-xl font-semibold mb-3">
+            Propiedades del cliente
+          </h2>
 
-        {loadingCasas && (
-          <p className="text-gray-500 text-sm">Cargando propiedades…</p>
-        )}
+          {casasDelCliente.length === 0 && (
+            <p className="text-gray-500 text-sm">
+              Este cliente no tiene propiedades asignadas.
+            </p>
+          )}
 
-        {!loadingCasas && casas.length === 0 && (
-          <p className="text-gray-500 text-sm">
-            No hay propiedades disponibles
-          </p>
-        )}
-
-        <ul className="space-y-3">
-          {casas.map(casa => {
-            const esDuenio = casa.duenio === form.documento;
-
-            return (
+          <ul className="space-y-3">
+            {casasDelCliente.map(casa => (
               <li
                 key={casa.id}
                 className="border rounded-xl p-4 flex justify-between items-center"
               >
-                <div>
-                  <p className="font-medium">{casa.ubicacion}</p>
-                  <p className="text-sm text-gray-500">
-                    {esDuenio ? "Ya es dueño" : "Sin dueño"}
-                  </p>
-                </div>
+                <p className="font-medium">{casa.ubicacion}</p>
 
-                {esDuenio ? (
-                  <button
-                    onClick={() => desvincularCasa(casa.id)}
-                    className="px-4 py-2 text-sm rounded-lg
-                               bg-red-100 text-red-600 hover:bg-red-200"
-                  >
-                    Desvincular
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => vincularCasa(casa.id)}
-                    className="px-4 py-2 text-sm rounded-lg
-                               bg-green-600 text-white hover:bg-green-700"
-                  >
-                    Vincular como dueño
-                  </button>
-                )}
+                <button
+                  onClick={() => desvincularCasa(casa.id)}
+                  className="px-4 py-2 text-sm rounded-lg
+                            bg-red-100 text-red-600 hover:bg-red-200"
+                >
+                  Desvincular
+                </button>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+        </div>
+
+
+        {/* PROPIEDADES DISPONIBLES */}
+        <div>
+          <h2 className="text-xl font-semibold mb-3">
+            Propiedades disponibles
+          </h2>
+
+          {casasDisponibles.length === 0 && (
+            <p className="text-gray-500 text-sm">
+              No hay propiedades disponibles.
+            </p>
+          )}
+
+          <ul className="space-y-3">
+            {casasDisponibles.map(casa => (
+              <li
+                key={casa.id}
+                className="border rounded-xl p-4 flex justify-between items-center"
+              >
+                <p className="font-medium">{casa.ubicacion}</p>
+
+                <button
+                  onClick={() => vincularCasa(casa.id)}
+                  className="px-4 py-2 text-sm rounded-lg
+                            bg-green-600 text-white hover:bg-green-700"
+                >
+                  Vincular como dueño
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
       </div>
 
     </div>

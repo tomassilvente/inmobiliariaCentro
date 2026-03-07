@@ -1,8 +1,8 @@
 import { getCasas } from "@/libs/data/casas";
-import ListadoCasasClient from "@/components/common/ListadoCasas";
+import ListadoCasas from "@/components/common/ListadoCasas";
 
 export default async function AlquilerPage() {
-  const casas = await getCasas("alquier");
+  const casas = await getCasas("alquiler");
 
-  return <ListadoCasasClient casas={casas} tipo="alquiler" />;
+  return <ListadoCasas casas={casas} tipo="alquiler" />;
 }

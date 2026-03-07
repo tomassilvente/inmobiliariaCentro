@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import { connection } from "@/libs/db";
 
-/* ======================================================
-   GET → casas para vincular como dueño
-   - sin dueño
-   - o ya del cliente
-====================================================== */
 export async function GET(
   _: Request,
   { params }: { params: { userId: string } }
@@ -13,7 +8,6 @@ export async function GET(
   const documento = params.userId;
   const conn = await connection;
 
-  /* 1️⃣ Buscar id del usuario */
   const [users]: any = await conn.query(
     `SELECT id FROM users WHERE documento = ? LIMIT 1`,
     [documento]
@@ -25,26 +19,21 @@ export async function GET(
 
   const userId = users[0].id;
 
-  /* 2️⃣ Traer casas */
   const [rows]: any = await conn.query(
     `
     SELECT
       c.id,
       c.ubicacion,
-      cc.user_id AS duenio
+      u.documento AS duenio
     FROM casas c
     LEFT JOIN casacliente cc ON cc.casa_id = c.id
+    LEFT JOIN users u ON u.id = cc.user_id
     WHERE cc.user_id IS NULL OR cc.user_id = ?
     `,
     [userId]
   );
 
-  /* 3️⃣ Filtrar */
-  const casas = rows.filter((casa: any) =>
-    !casa.duenio || casa.duenio === userId
-  );
-
-  return NextResponse.json(casas);
+  return NextResponse.json(rows);
 }
 
 
